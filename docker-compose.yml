@@ -1,0 +1,32 @@
+version: '3.5'
+
+services:
+
+  web:
+    image: web
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    ports:
+      - 5002:5000
+    environment:
+      - APP_NAME=wishlists
+      - FLASK_DEBUG=1
+      - PYTHONUNBUFFERED=0
+      - APP_SETTINGS=web.domain.config.DevelopmentConfig
+      - DATABASE_URL=postgres://postgres:postgres@web-db:5432/users_dev
+      - DATABASE_TEST_URL=postgres://postgres:postgres@web-db:5432/users_test
+      - SECRET_KEY=change_me_in_prod
+    depends_on:
+      - web-db
+
+  web-db:
+    container_name: web-db
+    build:
+      context: ./web-db
+      dockerfile: Dockerfile
+    ports:
+      - 5435:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
