@@ -5,8 +5,6 @@ from flask_testing import TestCase
 
 from web.domain import db, create_app
 
-app = create_app()
-
 
 class BaseTestCase(TestCase):
     def create_app(self):
