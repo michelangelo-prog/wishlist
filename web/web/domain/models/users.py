@@ -3,7 +3,7 @@
 from web.domain import db
 from web.domain.models.behaviors import IdMixin, CreateAtMixin, UpdateAtMixin
 
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash
 
 
 class User(IdMixin, CreateAtMixin, UpdateAtMixin, db.Model):

@@ -1,16 +1,14 @@
 # web/tests/test_config.py
 import os
 
-from flask import Flask
 from flask import current_app
-from flask_testing import TestCase
 
-from web.domain import create_app
+from web.tests.component.mixins import BaseTestCase
 
 
-class TestDevelopmentConfig(TestCase):
+class TestDevelopmentConfig(BaseTestCase):
     def create_app(self):
-        app = Flask(__name__)
+        app = super().create_app()
         app.config.from_object("web.domain.config.DevelopmentConfig")
         return app
 
@@ -20,21 +18,20 @@ class TestDevelopmentConfig(TestCase):
         self.assertFalse(current_app is None)
 
 
-class TestTestingConfig(TestCase):
+class TestTestingConfig(BaseTestCase):
     def create_app(self):
-        app = Flask(__name__)
+        app = super().create_app()
         app.config.from_object("web.domain.config.TestingConfig")
         return app
 
     def test_app_is_testing(self):
-        app = Flask(__name__)
         self.assertTrue(current_app.config["TESTING"])
         self.assertFalse(current_app.config["WTF_CSRF_ENABLED"])
 
 
-class TestProductionConfig(TestCase):
+class TestProductionConfig(BaseTestCase):
     def create_app(self):
-        app = Flask(__name__)
+        app = super().create_app()
         app.config.from_object("web.domain.config.ProductionConfig")
         return app
 

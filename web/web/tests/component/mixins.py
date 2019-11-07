@@ -8,6 +8,7 @@ from web.domain import db, create_app
 
 class BaseTestCase(TestCase):
     def create_app(self):
+        app = create_app()
         app.config.from_object("web.domain.config.TestingConfig")
         return app
 
