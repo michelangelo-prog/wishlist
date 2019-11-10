@@ -1,4 +1,6 @@
 # web/tests/test_config.py
+
+import unittest
 import os
 
 from flask import current_app
@@ -41,3 +43,7 @@ class TestProductionConfig(BaseTestCase):
 
     def test_secret_key_has_been_set(self):
         self.assertTrue(current_app.secret_key, os.getenv("SECRET_KEY"))
+
+
+if __name__ == "__main__":
+    unittest.main()
