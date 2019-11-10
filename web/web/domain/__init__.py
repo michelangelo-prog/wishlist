@@ -9,6 +9,12 @@ from flask_migrate import Migrate
 
 MIGRATION_DIR = "migrations"
 
+APP_SETTINGS = {
+    "Development": "web.domain.config.DevelopmentConfig",
+    "Test": "web.domain.config.TestingConfig",
+    "Production": "web.domain.config.ProductionConfig",
+}
+
 # instantiate the extensions
 db = SQLAlchemy()
 migrate = Migrate()
@@ -20,8 +26,8 @@ def create_app(script_info=None):
     app = Flask(__name__)
 
     # set config
-    app_settings = os.getenv("APP_SETTINGS", "web.domain.config.ProductionConfig")
-    app.config.from_object(app_settings)
+    app_settings = os.getenv("APP_SETTINGS", "Production")
+    app.config.from_object(APP_SETTINGS[app_settings])
 
     # set up extensions
     db.init_app(app)
