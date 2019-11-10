@@ -7,13 +7,10 @@ from flask import current_app
 
 from web.tests.component.mixins import BaseTestCase
 
-from web.domain import APP_SETTINGS
-
 
 class TestDevelopmentConfig(BaseTestCase):
     def create_app(self):
-        app = super().create_app()
-        app.config.from_object(APP_SETTINGS["Development"])
+        app = super().create_app(app_settings="Development")
         return app
 
     def test_app_is_development(self):
@@ -24,8 +21,7 @@ class TestDevelopmentConfig(BaseTestCase):
 
 class TestTestingConfig(BaseTestCase):
     def create_app(self):
-        app = super().create_app()
-        app.config.from_object(APP_SETTINGS["Test"])
+        app = super().create_app(app_settings="Test")
         return app
 
     def test_app_is_testing(self):
@@ -36,8 +32,7 @@ class TestTestingConfig(BaseTestCase):
 
 class TestProductionConfig(BaseTestCase):
     def create_app(self):
-        app = super().create_app()
-        app.config.from_object(APP_SETTINGS["Production"])
+        app = super().create_app(app_settings="Production")
         return app
 
     def test_app_is_production(self):

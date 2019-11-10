@@ -7,9 +7,9 @@ from web.domain import db, create_app, APP_SETTINGS
 
 
 class BaseTestCase(TestCase):
-    def create_app(self):
+    def create_app(self, app_settings="Test"):
         app = create_app()
-        app.config.from_object(APP_SETTINGS["Test"])
+        app.config.from_object(APP_SETTINGS[app_settings])
         return app
 
     def setUp(self):
