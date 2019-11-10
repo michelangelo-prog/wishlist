@@ -1,4 +1,4 @@
-from project.server import db
+from web.domain import db
 
 import datetime
 
