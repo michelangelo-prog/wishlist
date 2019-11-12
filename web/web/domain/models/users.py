@@ -15,8 +15,10 @@ class User(IdMixin, CreateAtMixin, UpdateAtMixin, db.Model):
     password = db.Column(db.String(255), nullable=False)
 
     def __init__(self, **kwargs):
-        self.email = kwargs.get("email")
-        password = kwargs.get("password")
+        user_data = UserSchema().load(kwargs)
+
+        self.email = user_data.get("email")
+        password = user_data.get("password")
         self.password = generate_password_hash(password, method="sha256")
 
     @classmethod
@@ -41,5 +43,5 @@ class User(IdMixin, CreateAtMixin, UpdateAtMixin, db.Model):
 
 
 class UserSchema(Schema):
-    email = fields.Str(required=True)
+    email = fields.Email(required=True)
     password = fields.Str(required=True)

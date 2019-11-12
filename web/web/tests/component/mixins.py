@@ -18,3 +18,9 @@ class BaseTestCase(TestCase):
     def tearDown(self):
         db.session.remove()
         db.drop_all()
+
+
+class UserMixin:
+    def send_register_user(self, **kwargs):
+        uri = "/api/v1/users/register"
+        return self.client.post(uri, **kwargs)

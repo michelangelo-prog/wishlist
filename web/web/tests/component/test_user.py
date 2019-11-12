@@ -1,13 +1,14 @@
 # web/tests/test_user.py
+import unittest
 
-from web.tests.component.mixins import BaseTestCase
+from web.tests.component.mixins import BaseTestCase, UserMixin
 
 
-class TestUserBlueprint(BaseTestCase):
+class TestUserBlueprint(UserMixin, BaseTestCase):
     def test_user_registration(self):
-        user_data = {"email": "olej@o2.pl", "password": "useruser"}
+        json = {"email": "olej@o2.pl", "password": "useruser"}
 
-        response = self.client.post("api/v1/users/register", json=user_data)
+        response = self.send_register_user(json=json)
 
         self.assertEqual(201, response.status_code)
         expected_json = {"info": "User successfully created."}
