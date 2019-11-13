@@ -34,9 +34,9 @@ def create_app(script_info=None):
     migrate.init_app(app, db, directory=MIGRATION_DIR)
 
     # register blueprints
-    from web.domain.api.views import blueprint as api_blueprint
+    from web.domain.api.users import user_blueprint
 
-    app.register_blueprint(api_blueprint)
+    app.register_blueprint(user_blueprint, url_prefix="/api/v1/users")
 
     # error handlers
     @app.errorhandler(400)
