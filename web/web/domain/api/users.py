@@ -16,5 +16,5 @@ def register():
         db.session.add(user)
         db.session.commit()
         return jsonify({"info": "User successfully created."}), 201
-    except ValidationError as e:
-        return 404
+    except ValidationError as exc:
+        return jsonify(str(exc)), 400

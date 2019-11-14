@@ -3,16 +3,31 @@ import unittest
 
 from web.tests.component.mixins import BaseTestCase, UserMixin
 
+from web.tests.factories import UserFactory
+
 
 class TestUserBlueprint(UserMixin, BaseTestCase):
     def test_user_registration(self):
-        json = {"email": "olej@o2.pl", "password": "useruser"}
-
-        response = self.send_register_user(json=json)
+        data = UserFactory.build()
+        response = self.send_register_user(json=data)
 
         self.assertEqual(201, response.status_code)
         expected_json = {"info": "User successfully created."}
         self.assertEqual(expected_json, response.json)
+
+    def test_return_400_when_register_user_without_email(self):
+        data = UserFactory.build()
+        del data["email"]
+
+        response = self.send_register_user(json=data)
+        self.assertEqual(400, response.status_code)
+
+    def test_return_400_when_register_user_without_password(self):
+        data = UserFactory.build()
+        del data["password"]
+
+        response = self.send_register_user(json=data)
+        self.assertEqual(400, response.status_code)
 
 
 if __name__ == "__main__":
