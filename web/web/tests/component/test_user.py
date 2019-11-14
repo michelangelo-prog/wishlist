@@ -29,6 +29,13 @@ class TestUserBlueprint(UserMixin, BaseTestCase):
         response = self.send_register_user(json=data)
         self.assertEqual(400, response.status_code)
 
+    def test_return_400_when_register_user_without_email_and_password(self):
+        data = UserFactory.build()
+        del data["email"], data["password"]
+
+        response = self.send_register_user(json=data)
+        self.assertEqual(400, response.status_code)
+
 
 if __name__ == "__main__":
     unittest.main()
