@@ -7,7 +7,7 @@ from web.tests.factories import UserFactory
 
 
 class TestUserBlueprint(UserMixin, BaseTestCase):
-    def test_user_registration(self):
+    def test_correct_registration(self):
         data = UserFactory.build()
         response = self.send_register_user(json=data)
 
@@ -35,6 +35,10 @@ class TestUserBlueprint(UserMixin, BaseTestCase):
 
         response = self.send_register_user(json=data)
         self.assertEqual(400, response.status_code)
+
+    def test_correct_login(self):
+        response = self.send_login_user(json=self.user_data)
+        self.assertEqual(201, response.status_code)
 
 
 if __name__ == "__main__":

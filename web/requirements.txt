@@ -10,3 +10,4 @@ psycopg2-binary==2.7.4
 gunicorn
 pytest
 factory_boy
+PyJWT

@@ -29,14 +29,11 @@ class User(IdMixin, CreateAtMixin, UpdateAtMixin, db.Model):
         if not email or not password:
             return None
 
-        user = self.__get_user_by_email(email)
+        user = cls.query.filter_by(email=email).one()
         if not user or not check_password_hash(user.password, password):
             return None
 
         return user
-
-    def __get_user_by_email(self, email):
-        return self.query.filter_by(email=email).one()
 
     def to_dict(self):
         return dict(id=self.id, email=self.email)
