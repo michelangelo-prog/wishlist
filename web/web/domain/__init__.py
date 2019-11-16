@@ -35,8 +35,10 @@ def create_app(script_info=None):
 
     # register blueprints
     from web.domain.api.users import user_blueprint
+    from web.domain.api.hello_world import helloworld_blueprint
 
     app.register_blueprint(user_blueprint, url_prefix="/api/v1/users")
+    app.register_blueprint(helloworld_blueprint)
 
     # error handlers
     @app.errorhandler(400)
