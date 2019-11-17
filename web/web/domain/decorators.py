@@ -1,7 +1,7 @@
 # web/domain/decorators.py
 from functools import wraps
 
-from flask import request, current_app, jsonify
+from flask import request, jsonify
 
 from web.domain.models.users import User
 
