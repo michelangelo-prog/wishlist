@@ -14,11 +14,17 @@ class BaseTestCase(TestCase):
         return app
 
     def setUp(self):
+        db.drop_all()
         db.create_all()
         self.user_data = {"email": "testowy@email.pl", "password": "takieSobiehaslo1"}
-        user = User(**self.user_data)
-        db.session.add(user)
+        self.user = User(**self.user_data)
+        db.session.add(self.user)
         db.session.commit()
+        user_token = self.user.encode_auth_token()
+        self.headers = {
+            "Authorization": f"Bearer {user_token}",
+            "Accept": "application/json",
+        }
 
     def tearDown(self):
         db.session.remove()

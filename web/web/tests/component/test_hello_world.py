@@ -7,7 +7,7 @@ from web.tests.component.mixins import BaseTestCase
 class TestHelloWorldBlueprint(BaseTestCase):
     def test_hello_world(self):
         uri = "/helloworld"
-        response = self.client.get(uri)
+        response = self.client.get(uri, headers=self.headers)
         self.assertEqual(200, response.status_code)
 
 
