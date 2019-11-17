@@ -39,3 +39,7 @@ class UserMixin:
     def send_login_user(self, **kwargs):
         uri = "/api/v1/users/login"
         return self.client.post(uri, **kwargs)
+
+    def send_logout_user(self, **kwargs):
+        uri = "api/v1/users/logout"
+        return self.client.post(uri, **kwargs)

@@ -40,6 +40,10 @@ class TestUserBlueprint(UserMixin, BaseTestCase):
         response = self.send_login_user(json=self.user_data)
         self.assertEqual(201, response.status_code)
 
+    def test_correct_logout(self):
+        response = self.send_logout_user(headers=self.headers)
+        self.assertEqual(200, response.status_code)
+
 
 if __name__ == "__main__":
     unittest.main()
