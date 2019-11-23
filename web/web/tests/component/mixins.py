@@ -1,10 +1,9 @@
 # web/server/tests/base.py
-
-
 from flask_testing import TestCase
 
 from web.domain import db, create_app, APP_SETTINGS
 from web.domain.models.users import User
+from web.domain.models.blacklisttokens import BlacklistToken
 
 
 class BaseTestCase(TestCase):
@@ -20,9 +19,9 @@ class BaseTestCase(TestCase):
         self.user = User(**self.user_data)
         db.session.add(self.user)
         db.session.commit()
-        user_token = self.user.encode_auth_token()
+        self.valid_user_token = self.user.encode_auth_token()
         self.headers = {
-            "Authorization": f"Bearer {user_token}",
+            "Authorization": f"Bearer {self.valid_user_token}",
             "Accept": "application/json",
         }
 
@@ -43,3 +42,8 @@ class UserMixin:
     def send_logout_user(self, **kwargs):
         uri = "api/v1/users/logout"
         return self.client.post(uri, **kwargs)
+
+    def blacklist_token(self, token):
+        blacklisttoken = BlacklistToken(token=token)
+        db.session.add(blacklisttoken)
+        db.session.commit()

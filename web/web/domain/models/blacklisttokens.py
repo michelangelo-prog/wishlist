@@ -12,5 +12,9 @@ class BlacklistToken(IdMixin, db.Model):
         db.DateTime, nullable=False, default=datetime.datetime.now
     )
 
+    @classmethod
+    def get_blacklistedtoken_by_token(cls, token):
+        return cls.query.filter_by(token=token).one()
+
     def __repr__(self):
         return f"<token: {self.token}>"

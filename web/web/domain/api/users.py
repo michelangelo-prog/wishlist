@@ -5,9 +5,26 @@ from marshmallow import ValidationError
 from web.domain import db
 from web.domain.models.users import User
 from web.domain.models.blacklisttokens import BlacklistToken
+from web.domain.decorators import token_required
 
+from web.domain.helpers import get_authorization_from_request_headers
 
 user_blueprint = Blueprint("user", __name__)
+
+login_msg_fail = {
+    "status": "fail",
+    "message": "Invalid user data.",
+}
+
+logout_msg_success = {
+    "status": "success",
+    "message": "Successfully logged out.",
+}
+
+logout_msg_fail = {
+    "status": "fail",
+    "message": "Invalid token. Registeration and / or authentication required",
+}
 
 
 @user_blueprint.route("/register", methods=["POST"])
@@ -24,36 +41,21 @@ def register():
 
 @user_blueprint.route("/login", methods=["POST"])
 def login():
-    json = request.get_json()
-    user = User.authenticate(**json)
+    try:
+        json = request.get_json()
+        user = User.authenticate(**json)
 
-    token = user.encode_auth_token()
-    return jsonify({"token": token}), 201
-
-
-logout_msg_success = {
-    "message": "Successfully logged out.",
-}
-
-logout_msg_fail = {
-    "message": "Invalid token. Registeration and / or authentication required",
-}
+        token = user.encode_auth_token()
+        return jsonify({"token": token}), 201
+    except Exception:
+        return jsonify(login_msg_fail), 401
 
 
 @user_blueprint.route("/logout", methods=["POST"])
-def logout():
-    auth_headers = request.headers.get("Authorization", "").split()
-
-    if len(auth_headers) != 2:
-        return jsonify(logout_msg_fail), 401
-
-    try:
-        token = auth_headers[1]
-        data = User.decode_auth_token(token)
-        User.get_user_by_email(email=data["sub"])
-        blacklisttoken = BlacklistToken(token=token)
-        db.session.add(blacklisttoken)
-        db.session.commit()
-        return jsonify(logout_msg_success), 200
-    except Exception as e:
-        return jsonify(logout_msg_fail), 401
+@token_required
+def logout(current_user):
+    token = get_authorization_from_request_headers(request)[1]
+    blacklisttoken = BlacklistToken(token=token)
+    db.session.add(blacklisttoken)
+    db.session.commit()
+    return jsonify(logout_msg_success), 200
