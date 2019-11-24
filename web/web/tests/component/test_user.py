@@ -13,8 +13,24 @@ class TestUserBlueprint(UserMixin, BaseTestCase):
         response = self.send_register_user(json=data)
 
         self.assertEqual(201, response.status_code)
-        expected_json = {"info": "User successfully created."}
+        expected_json = {
+            "status": "fail",
+            "message": "User successfully created.",
+        }
         self.assertEqual(expected_json, response.json)
+
+    def test_return_400_when_try_to_register_already_existing_username(self):
+        data = UserFactory.build()
+        self.send_register_user(json=data)
+        response = self.send_register_user(json=data)
+        self.assertEqual(400, response.status_code)
+
+    def test_return_400_when_register_user_without_username(self):
+        data = UserFactory.build()
+        del data["username"]
+
+        response = self.send_register_user(json=data)
+        self.assertEqual(400, response.status_code)
 
     def test_return_400_when_register_user_without_email(self):
         data = UserFactory.build()
@@ -30,9 +46,9 @@ class TestUserBlueprint(UserMixin, BaseTestCase):
         response = self.send_register_user(json=data)
         self.assertEqual(400, response.status_code)
 
-    def test_return_400_when_register_user_without_email_and_password(self):
+    def test_return_400_when_register_user_without_data(self):
         data = UserFactory.build()
-        del data["email"], data["password"]
+        del data["email"], data["password"], data["username"]
 
         response = self.send_register_user(json=data)
         self.assertEqual(400, response.status_code)

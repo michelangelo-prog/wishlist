@@ -11,6 +11,11 @@ from web.domain.helpers import get_authorization_from_request_headers
 
 user_blueprint = Blueprint("user", __name__)
 
+register_msg_success = {
+    "status": "fail",
+    "message": "User successfully created.",
+}
+
 login_msg_fail = {
     "status": "fail",
     "message": "Invalid user data.",
@@ -34,7 +39,7 @@ def register():
         user = User(**json)
         db.session.add(user)
         db.session.commit()
-        return jsonify({"info": "User successfully created."}), 201
+        return jsonify(register_msg_success), 201
     except ValidationError as exc:
         return jsonify(str(exc)), 400
 

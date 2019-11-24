@@ -4,6 +4,7 @@ from flask_testing import TestCase
 from web.domain import db, create_app, APP_SETTINGS
 from web.domain.models.users import User
 from web.domain.models.blacklisttokens import BlacklistToken
+from web.tests.factories import UserFactory
 
 
 class BaseTestCase(TestCase):
@@ -15,7 +16,9 @@ class BaseTestCase(TestCase):
     def setUp(self):
         db.drop_all()
         db.create_all()
-        self.user_data = {"email": "testowy@email.pl", "password": "takieSobiehaslo1"}
+        self.user_data = UserFactory(
+            username="PanTestowy", email="testowy@email.pl", password="takieSobiehaslo1"
+        )
         self.user = User(**self.user_data)
         db.session.add(self.user)
         db.session.commit()
