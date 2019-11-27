@@ -21,6 +21,7 @@ class User(IdMixin, CreateAtMixin, UpdateAtMixin, db.Model):
     username = db.Column(db.String(120), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
+    is_superuser = db.Column(db.Boolean, nullable=False, default=False)
 
     def __init__(self, **kwargs):
         user_data = UserSchema().load(kwargs)
