@@ -5,6 +5,7 @@ from web.tests.component.mixins import BaseTestCase, UserMixin
 from web.tests.factories import UserFactory
 
 from web.domain.helpers import check_if_token_valid
+from web.domain.models.users import User
 
 
 class TestUserBlueprint(UserMixin, BaseTestCase):
@@ -95,6 +96,25 @@ class TestUserBlueprint(UserMixin, BaseTestCase):
             "message": "Successfully logged out.",
         }
         self.assertEqual(200, response.status_code)
+        self.assertEqual(expected_json, response.json)
+
+    def test_return_401_when_unregistered_user_try_logout(self):
+        user_data = UserFactory.build()
+        user = User(**user_data)
+        token = user.encode_auth_token()
+
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/json",
+        }
+
+        response = self.send_logout_user(headers=headers)
+
+        expected_json = {
+            "message": "Invalid token. Registeration and / or authentication required",
+            "authenticated": False,
+        }
+        self.assertEqual(401, response.status_code)
         self.assertEqual(expected_json, response.json)
 
     def test_return_401_when_user_try_logout_and_token_blacklisted(self):
