@@ -1,8 +1,8 @@
 # web/domain/users.py
-
 from flask import current_app
 
 from sqlalchemy.orm import validates
+from sqlalchemy import Column, String, Boolean
 
 from web.domain import db
 from web.domain.models.behaviors import IdMixin, CreateAtMixin, UpdateAtMixin
@@ -18,10 +18,10 @@ from datetime import datetime, timedelta
 class User(IdMixin, CreateAtMixin, UpdateAtMixin, db.Model):
     __tablename__ = "users"
 
-    username = db.Column(db.String(120), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)
-    is_superuser = db.Column(db.Boolean, nullable=False, default=False)
+    username = Column(String(120), unique=True, nullable=False)
+    email = Column(String(120), unique=True, nullable=False)
+    password = Column(String(255), nullable=False)
+    is_superuser = Column(Boolean, nullable=False, default=False)
 
     def __init__(self, **kwargs):
         user_data = UserSchema().load(kwargs)
