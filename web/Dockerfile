@@ -5,6 +5,10 @@ RUN apt-get update \
   && apt-get -y install netcat \
   && apt-get clean
 
+# install vim
+RUN apt-get -y install vim \
+  && apt-get clean
+
 # set working directory
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
