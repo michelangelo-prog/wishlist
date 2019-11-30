@@ -16,6 +16,15 @@ class BaseTestCase(TestCase):
     def setUp(self):
         db.drop_all()
         db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+
+class UserBaseTestCase(BaseTestCase):
+    def setUp(self):
+        super().setUp()
         self.user_data = UserFactory(
             username="PanTestowy", email="testowy@email.pl", password="takieSobiehaslo1"
         )
@@ -27,10 +36,6 @@ class BaseTestCase(TestCase):
             "Authorization": f"Bearer {self.valid_user_token}",
             "Accept": "application/json",
         }
-
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
 
 
 class UserMixin:
@@ -50,3 +55,13 @@ class UserMixin:
         blacklisttoken = BlacklistToken(token=token)
         db.session.add(blacklisttoken)
         db.session.commit()
+
+
+class FriendshipMixin:
+    def send_invitation_to_user(self, **kwargs):
+        uri = "/api/v1/friendships/add"
+        return self.client.post(uri, **kwargs)
+
+    def get_invitations_from_users(self, **kwargs):
+        uri = "/api/v1/friendships/waiting"
+        return self.client.get(uri, **kwargs)

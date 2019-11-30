@@ -1,14 +1,14 @@
 # web/tests/test_user.py
 import unittest
 
-from web.tests.component.mixins import BaseTestCase, UserMixin
+from web.tests.component.mixins import UserBaseTestCase, UserMixin
 from web.tests.factories import UserFactory
 
 from web.domain.helpers import check_if_token_valid
 from web.domain.models.users import User
 
 
-class TestUserBlueprint(UserMixin, BaseTestCase):
+class TestUserBlueprint(UserMixin, UserBaseTestCase):
     def test_correct_registration(self):
         data = UserFactory.build()
         response = self.send_register_user(json=data)

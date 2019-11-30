@@ -1,10 +1,10 @@
 # web/tests/test_hello_world.py
 import unittest
 
-from web.tests.component.mixins import BaseTestCase
+from web.tests.component.mixins import UserBaseTestCase
 
 
-class TestHelloWorldBlueprint(BaseTestCase):
+class TestHelloWorldBlueprint(UserBaseTestCase):
     def test_hello_world(self):
         uri = "/helloworld"
         response = self.client.get(uri, headers=self.headers)
