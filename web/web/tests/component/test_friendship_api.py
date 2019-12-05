@@ -61,19 +61,31 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         self.__when_second_user_check_if_have_any_friends()
         self.__then_second_user_have_third_user_in_friendships()
 
+    def register_user(self, user_data):
+        response = self.send_register_user(json=user_data)
+        self.assertEqual(201, response.status_code)
+        return response
+
+    def login_user(self, user_data):
+        response = self.send_login_user(json=user_data)
+        self.assertEqual(201, response.status_code)
+        return response
+
+    def prepare_user_header(self, token):
+        return {
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/json",
+        }
+
     def __given_three_registered_users(self):
         self.user_data = [UserFactory.build() for i in range(3)]
         self.headers = []
 
-        for data in self.user_data:
-            self.send_register_user(json=data)
-            login_response = self.send_login_user(json=data)
-            token = login_response.json["token"]
-            header = {
-                "Authorization": f"Bearer {token}",
-                "Accept": "application/json",
-            }
-            self.headers.append(header)
+        for user_data in self.user_data:
+            self.register_user(user_data)
+            login_response = self.login_user(user_data)
+            user_header = self.prepare_user_header(login_response.json["token"])
+            self.headers.append(user_header)
 
     def __when_first_user_send_invitation_to_second_user(self):
         json = {"username": self.user_data[1]["username"]}
