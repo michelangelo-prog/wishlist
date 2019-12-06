@@ -87,6 +87,10 @@ class User(IdMixin, CreateAtMixin, UpdateAtMixin, db.Model):
         return cls.query.filter_by(email=email).one()
 
     @classmethod
+    def get_user_by_username(cls, username):
+        return cls.query.filter_by(username=username).one()
+
+    @classmethod
     def decode_auth_token(cls, token):
         return jwt.decode(token, current_app.config["SECRET_KEY"])
 

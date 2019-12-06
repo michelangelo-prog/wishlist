@@ -18,11 +18,7 @@ cli = FlaskGroup(create_app=create_app)
 COV = coverage.coverage(
     branch=True,
     include="web/*",
-    omit=[
-        "web/tests/*",
-        "web/domain/config.py",
-        "web/domain/*/__init__.py",
-    ],
+    omit=["web/tests/*", "web/domain/config.py", "web/domain/*/__init__.py",],
 )
 COV.start()
 
@@ -63,6 +59,12 @@ def test():
         sys.exit(0)
     else:
         sys.exit(1)
+
+
+@cli.command()
+def pytest():
+    """Runs pytest on the web."""
+    subprocess.run(["pytest"])
 
 
 @cli.command()
