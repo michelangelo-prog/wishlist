@@ -59,24 +59,24 @@ class UserMixin:
 
 class FriendshipMixin:
     def send_invitation_to_user(self, **kwargs):
-        uri = "/api/v1/friendships/add"
+        uri = "/api/v1/friendships/invitations"
         return self.client.post(uri, **kwargs)
 
     def get_invitations_from_users(self, **kwargs):
-        uri = "/api/v1/friendships/waiting"
+        uri = "/api/v1/friendships/invitations"
         return self.client.get(uri, **kwargs)
 
     def send_accept_invitation(self, **kwargs):
-        uri = "/api/v1/friendships/accept"
+        uri = "/api/v1/friendships/invitations"
         return self.client.put(uri, **kwargs)
+
+    def send_decline_invitation(self, **kwargs):
+        uri = "/api/v1/friendships/invitations"
+        return self.client.delete(uri, **kwargs)
 
     def get_list_of_friends(self, **kwargs):
         uri = "api/v1/friendships/all"
         return self.client.get(uri, **kwargs)
-
-    def sent_decline_invitation(self, **kwargs):
-        uri = "/api/v1/friendships/decline"
-        return self.client.delete(uri, **kwargs)
 
     def send_delete_freindship(self, **kwargs):
         uri = "/api/v1/friendships/delete"

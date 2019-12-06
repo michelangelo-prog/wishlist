@@ -114,7 +114,7 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
 
     def __when_second_user_decline_invitation_from_first_user(self):
         json = {"username": self.user_data[0]["username"]}
-        self.response = self.sent_decline_invitation(headers=self.headers[1], json=json)
+        self.response = self.send_decline_invitation(headers=self.headers[1], json=json)
 
     def __when_second_user_delete_first_user_from_friendship(self):
         json = {"username": self.user_data[0]["username"]}
@@ -122,38 +122,54 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
 
     def __then_user_get_201_when_invitation_has_been_successfully_send(self):
         self.assertEqual(201, self.response.status_code)
+        expected_json = {"status": "success"}
+        self.assertEqual(expected_json, self.response.json)
 
     def __then_invition_from_first_user_is_waiting(self):
         self.assertEqual(200, self.response.status_code)
-        self.assertEqual(1, len(self.response.json["users"]))
-        self.assertEqual(self.user_data[0]["username"], self.response.json["users"][0])
+        self.assertEqual(1, len(self.response.json["waiting_users"]))
+        self.assertEqual(
+            self.user_data[0]["username"], self.response.json["waiting_users"][0]
+        )
 
     def __then_second_user_get_204_when_invitation_has_been_successfully_accepted(self):
         self.assertEqual(204, self.response.status_code)
+        expected_json = {"status": "success"}
+        self.assertEqual(expected_json, self.response.json)
 
     def __then_second_user_have_friend(self):
         response_json = self.response.json
         self.assertEqual(200, self.response.status_code)
-        self.assertEqual(1, len(response_json["users"]))
-        self.assertEqual(self.user_data[0]["username"], response_json["users"][0])
+        self.assertEqual(1, len(response_json["user_friends"]))
+        self.assertEqual(
+            self.user_data[0]["username"], response_json["user_friends"][0]
+        )
 
     def __then_second_user_have_third_user_in_friendships(self):
         response_json = self.response.json
         self.assertEqual(200, self.response.status_code)
-        self.assertEqual(1, len(response_json["users"]))
-        self.assertEqual(self.user_data[2]["username"], response_json["users"][0])
+        self.assertEqual(1, len(response_json["user_friends"]))
+        self.assertEqual(
+            self.user_data[2]["username"], response_json["user_friends"][0]
+        )
 
     def __then_first_user_have_friend(self):
         response_json = self.response.json
         self.assertEqual(200, self.response.status_code)
-        self.assertEqual(1, len(response_json["users"]))
-        self.assertEqual(self.user_data[1]["username"], response_json["users"][0])
+        self.assertEqual(1, len(response_json["user_friends"]))
+        self.assertEqual(
+            self.user_data[1]["username"], response_json["user_friends"][0]
+        )
 
     def __then_user_get_204_when_invitation_has_been_successfully_declined(self):
         self.assertEqual(204, self.response.status_code)
+        expected_json = {"status": "success"}
+        self.assertEqual(expected_json, self.response.json)
 
     def __then_user_get_204_when_friendship_has_been_deleted(self):
         self.assertEqual(204, self.response.status_code)
+        expected_json = {"status": "success"}
+        self.assertEqual(expected_json, self.response.json)
 
 
 if __name__ == "__main__":
