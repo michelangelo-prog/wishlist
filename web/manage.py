@@ -88,11 +88,5 @@ def cov():
         sys.exit(1)
 
 
-@cli.command()
-def flake():
-    """Runs flake8 on the web."""
-    subprocess.run(["flake8", "web"])
-
-
 if __name__ == "__main__":
     cli()
