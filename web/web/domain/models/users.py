@@ -11,6 +11,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from web.domain import db
 from web.domain.models.behaviors import CreateAtMixin, IdMixin, UpdateAtMixin
 
+ALGORITHMS = ["HS256"]
+
 
 class User(IdMixin, CreateAtMixin, UpdateAtMixin, db.Model):
     __tablename__ = "users"
@@ -89,7 +91,9 @@ class User(IdMixin, CreateAtMixin, UpdateAtMixin, db.Model):
 
     @classmethod
     def decode_auth_token(cls, token):
-        return jwt.decode(token, current_app.config["SECRET_KEY"])
+        return jwt.decode(
+            token, current_app.config["SECRET_KEY"], algorithms=ALGORITHMS
+        )
 
     def encode_auth_token(self):
         payload = {
