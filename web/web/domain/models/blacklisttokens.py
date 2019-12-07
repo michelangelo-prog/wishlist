@@ -1,7 +1,7 @@
+import datetime
+
 from web.domain import db
 from web.domain.models.behaviors import IdMixin
-
-import datetime
 
 
 class BlacklistToken(IdMixin, db.Model):

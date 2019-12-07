@@ -1,11 +1,10 @@
 # web/tests/test_user.py
 import unittest
 
-from web.tests.component.mixins import UserBaseTestCase, UserMixin
-from web.tests.factories import UserFactory
-
 from web.domain.helpers import check_if_token_valid
 from web.domain.models.users import User
+from web.tests.component.mixins import UserBaseTestCase, UserMixin
+from web.tests.factories import UserFactory
 
 
 class TestUserBlueprint(UserMixin, UserBaseTestCase):
@@ -14,10 +13,7 @@ class TestUserBlueprint(UserMixin, UserBaseTestCase):
         response = self.send_register_user(json=data)
 
         self.assertEqual(201, response.status_code)
-        expected_json = {
-            "status": "fail",
-            "message": "User successfully created.",
-        }
+        expected_json = {"status": "fail", "message": "User successfully created."}
         self.assertEqual(expected_json, response.json)
 
     def test_return_400_when_try_to_register_already_existing_username(self):
@@ -62,39 +58,27 @@ class TestUserBlueprint(UserMixin, UserBaseTestCase):
     def test_return_401_when_unregistered_user_try_login(self):
         data = UserFactory.build()
         response = self.send_login_user(json=data)
-        expected_json = {
-            "status": "fail",
-            "message": "Invalid user data.",
-        }
+        expected_json = {"status": "fail", "message": "Invalid user data."}
         self.assertEqual(401, response.status_code)
         self.assertEqual(expected_json, response.json)
 
     def test_return_401_when_user_try_login_without_password(self):
         del self.user_data["password"]
         response = self.send_login_user(json=self.user_data)
-        expected_json = {
-            "status": "fail",
-            "message": "Invalid user data.",
-        }
+        expected_json = {"status": "fail", "message": "Invalid user data."}
         self.assertEqual(401, response.status_code)
         self.assertEqual(expected_json, response.json)
 
     def test_return_401_when_user_try_login_without_email_and_password(self):
         del self.user_data["email"], self.user_data["password"]
         response = self.send_login_user(json=self.user_data)
-        expected_json = {
-            "status": "fail",
-            "message": "Invalid user data.",
-        }
+        expected_json = {"status": "fail", "message": "Invalid user data."}
         self.assertEqual(401, response.status_code)
         self.assertEqual(expected_json, response.json)
 
     def test_correct_logout(self):
         response = self.send_logout_user(headers=self.headers)
-        expected_json = {
-            "status": "success",
-            "message": "Successfully logged out.",
-        }
+        expected_json = {"status": "success", "message": "Successfully logged out."}
         self.assertEqual(200, response.status_code)
         self.assertEqual(expected_json, response.json)
 
@@ -103,10 +87,7 @@ class TestUserBlueprint(UserMixin, UserBaseTestCase):
         user = User(**user_data)
         token = user.encode_auth_token()
 
-        headers = {
-            "Authorization": f"Bearer {token}",
-            "Accept": "application/json",
-        }
+        headers = {"Authorization": f"Bearer {token}", "Accept": "application/json"}
 
         response = self.send_logout_user(headers=headers)
 

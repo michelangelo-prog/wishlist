@@ -1,6 +1,6 @@
-from web.domain import db
-
 import datetime
+
+from web.domain import db
 
 
 class CreateAtMixin(db.Model):

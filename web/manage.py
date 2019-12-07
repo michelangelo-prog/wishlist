@@ -1,15 +1,13 @@
 # manage.py
 
-
+import subprocess
+import sys
 import unittest
 
 import coverage
-
 from flask.cli import FlaskGroup
 
 from web.domain import create_app, db
-import subprocess
-import sys
 
 app = create_app()
 cli = FlaskGroup(create_app=create_app)
@@ -18,7 +16,7 @@ cli = FlaskGroup(create_app=create_app)
 COV = coverage.coverage(
     branch=True,
     include="web/*",
-    omit=["web/tests/*", "web/domain/config.py", "web/domain/*/__init__.py",],
+    omit=["web/tests/*", "web/domain/config.py", "web/domain/*/__init__.py"],
 )
 COV.start()
 
@@ -51,7 +49,7 @@ def create_data():
 
 
 @cli.command()
-def test():
+def test_unitest():
     """Runs the unit tests without test coverage."""
     tests = unittest.TestLoader().discover("web/tests", pattern="test*.py")
     result = unittest.TextTestRunner(verbosity=2).run(tests)
@@ -62,7 +60,13 @@ def test():
 
 
 @cli.command()
-def pytest():
+def test_pytest_with_plugins():
+    """Runs pytest with plugins on the web."""
+    subprocess.run(["pytest", "--ignore=migrations", "--black", "--isort", "--flakes"])
+
+
+@cli.command()
+def test_pytest():
     """Runs pytest on the web."""
     subprocess.run(["pytest"])
 

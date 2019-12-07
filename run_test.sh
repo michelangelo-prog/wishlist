@@ -1,4 +1,3 @@
 #!/usr/bin/env bash
 docker-compose up -d --build
-docker-compose run web python manage.py pytest
-docker-compose run web flake8 web
+docker-compose run web python manage.py test-pytest

@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify, request
 
 from web.domain.decorators import token_required
 from web.domain.models.friendships import Friendship

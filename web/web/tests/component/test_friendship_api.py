@@ -2,7 +2,7 @@ import unittest
 
 import pytest
 
-from web.tests.component.mixins import BaseTestCase, UserMixin, FriendshipMixin
+from web.tests.component.mixins import BaseTestCase, FriendshipMixin, UserMixin
 from web.tests.factories import UserFactory
 
 
@@ -81,10 +81,7 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         return response
 
     def prepare_user_header(self, token):
-        return {
-            "Authorization": f"Bearer {token}",
-            "Accept": "application/json",
-        }
+        return {"Authorization": f"Bearer {token}", "Accept": "application/json"}
 
     def __given_three_registered_users(self):
         self.user_data = [UserFactory.build() for i in range(3)]

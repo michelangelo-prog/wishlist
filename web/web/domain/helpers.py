@@ -1,10 +1,9 @@
 # web/domain/helpers.py
-from web.domain.models.users import User
-from web.domain.models.blacklisttokens import BlacklistToken
-
-from jwt import InvalidTokenError, ExpiredSignatureError
-
+from jwt import ExpiredSignatureError, InvalidTokenError
 from sqlalchemy.orm.exc import NoResultFound
+
+from web.domain.models.blacklisttokens import BlacklistToken
+from web.domain.models.users import User
 
 
 def check_if_token_valid(token):
@@ -17,14 +16,6 @@ def check_if_token_valid(token):
         return True
     except (ExpiredSignatureError, InvalidTokenError, NoResultFound):
         return False
-
-
-def __check_if_token_is_blacklisted(token):
-    try:
-        if BlacklistToken.get_blacklistedtoken_by_token(token):
-            raise ExpiredSignatureError
-    except NoResultFound:
-        pass
 
 
 def get_authorization_from_request_headers(request):

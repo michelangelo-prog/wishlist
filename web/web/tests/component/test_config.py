@@ -1,7 +1,7 @@
 # web/tests/test_config.py
 
-import unittest
 import os
+import unittest
 
 from flask import current_app
 

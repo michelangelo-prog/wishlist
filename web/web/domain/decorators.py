@@ -1,18 +1,13 @@
 # web/domain/decorators.py
 from functools import wraps
 
-from flask import request, jsonify
-
+from flask import jsonify, request
+from jwt import ExpiredSignatureError, InvalidTokenError
 from sqlalchemy.orm.exc import NoResultFound
 
+from web.domain.helpers import get_authorization_from_request_headers
+from web.domain.models.blacklisttokens import BlacklistToken
 from web.domain.models.users import User
-from web.domain.helpers import (
-    get_authorization_from_request_headers,
-    __check_if_token_is_blacklisted,
-)
-
-from jwt import ExpiredSignatureError, InvalidTokenError
-
 
 invalid_msg = {
     "message": "Invalid token. Registeration and / or authentication required",
@@ -22,6 +17,14 @@ expired_msg = {
     "message": "Expired token. Reauthentication required.",
     "authenticated": False,
 }
+
+
+def __check_if_token_is_blacklisted(token):
+    try:
+        if BlacklistToken.get_blacklistedtoken_by_token(token):
+            raise ExpiredSignatureError
+    except NoResultFound:
+        pass
 
 
 def token_required(f):

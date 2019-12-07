@@ -1,9 +1,9 @@
 # web/server/tests/base.py
 from flask_testing import TestCase
 
-from web.domain import db, create_app, APP_SETTINGS
-from web.domain.models.users import User
+from web.domain import APP_SETTINGS, create_app, db
 from web.domain.models.blacklisttokens import BlacklistToken
+from web.domain.models.users import User
 from web.tests.factories import UserFactory
 
 

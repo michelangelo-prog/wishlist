@@ -1,18 +1,15 @@
 # web/domain/users.py
-from flask import current_app
-
-from sqlalchemy.orm import validates
-from sqlalchemy import Column, String, Boolean
-
-from web.domain import db
-from web.domain.models.behaviors import IdMixin, CreateAtMixin, UpdateAtMixin
-
-from werkzeug.security import generate_password_hash, check_password_hash
-
-from marshmallow import Schema, fields, ValidationError
+from datetime import datetime, timedelta
 
 import jwt
-from datetime import datetime, timedelta
+from flask import current_app
+from marshmallow import Schema, ValidationError, fields
+from sqlalchemy import Boolean, Column, String
+from sqlalchemy.orm import validates
+from werkzeug.security import check_password_hash, generate_password_hash
+
+from web.domain import db
+from web.domain.models.behaviors import CreateAtMixin, IdMixin, UpdateAtMixin
 
 
 class User(IdMixin, CreateAtMixin, UpdateAtMixin, db.Model):

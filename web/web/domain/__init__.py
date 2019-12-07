@@ -3,9 +3,9 @@
 
 import os
 
-from flask import Flask, make_response, jsonify
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, jsonify, make_response
 from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
 
 MIGRATION_DIR = "migrations"
 

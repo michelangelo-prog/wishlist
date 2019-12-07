@@ -1,16 +1,11 @@
 # web/domain/friendships.py
-from sqlalchemy import Column, Integer, ForeignKey
+from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm import relationship
 
 from web.domain import db
 from web.domain.models.behaviors import IdMixin
 
-STATUS = {
-    1: "Pending",
-    2: "Accepted",
-    3: "Declined",
-    4: "Blocked",
-}
+STATUS = {1: "Pending", 2: "Accepted", 3: "Declined", 4: "Blocked"}
 
 
 class Friendship(IdMixin, db.Model):

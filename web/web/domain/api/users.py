@@ -1,30 +1,19 @@
-from flask import Blueprint, request, jsonify
-
+from flask import Blueprint, jsonify, request
 from marshmallow import ValidationError
 
 from web.domain import db
-from web.domain.models.users import User
-from web.domain.models.blacklisttokens import BlacklistToken
 from web.domain.decorators import token_required
-
 from web.domain.helpers import get_authorization_from_request_headers
+from web.domain.models.blacklisttokens import BlacklistToken
+from web.domain.models.users import User
 
 user_blueprint = Blueprint("user", __name__)
 
-register_msg_success = {
-    "status": "fail",
-    "message": "User successfully created.",
-}
+register_msg_success = {"status": "fail", "message": "User successfully created."}
 
-login_msg_fail = {
-    "status": "fail",
-    "message": "Invalid user data.",
-}
+login_msg_fail = {"status": "fail", "message": "Invalid user data."}
 
-logout_msg_success = {
-    "status": "success",
-    "message": "Successfully logged out.",
-}
+logout_msg_success = {"status": "success", "message": "Successfully logged out."}
 
 logout_msg_fail = {
     "status": "fail",

@@ -1,7 +1,7 @@
 # web/tests/unit/test_friendships.py
-from web.domain.models.friendships import Friendship
-
 from unittest import TestCase
+
+from web.domain.models.friendships import Friendship
 
 
 class FriendshipTest(TestCase):
