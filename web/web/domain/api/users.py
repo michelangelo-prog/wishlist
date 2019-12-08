@@ -39,7 +39,7 @@ def login():
         json = request.get_json()
         user = User.authenticate(**json)
 
-        token = user.encode_auth_token()
+        token = user.encode_auth_token().decode("UTF-8")
         return jsonify({"token": token}), 201
     except Exception:
         return jsonify(login_msg_fail), 401

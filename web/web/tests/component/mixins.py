@@ -31,7 +31,7 @@ class UserBaseTestCase(BaseTestCase):
         self.user = User(**self.user_data)
         db.session.add(self.user)
         db.session.commit()
-        self.valid_user_token = self.user.encode_auth_token()
+        self.valid_user_token = self.user.encode_auth_token().decode("UTF-8")
         self.headers = {
             "Authorization": f"Bearer {self.valid_user_token}",
             "Accept": "application/json",
