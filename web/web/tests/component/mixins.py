@@ -8,9 +8,9 @@ from web.tests.factories import UserFactory
 
 
 class BaseTestCase(TestCase):
-    def create_app(self, app_settings="Test"):
+    def create_app(self):
         app = create_app()
-        app.config.from_object(APP_SETTINGS[app_settings])
+        app.config.from_object(APP_SETTINGS["Test"])
         return app
 
     def setUp(self):

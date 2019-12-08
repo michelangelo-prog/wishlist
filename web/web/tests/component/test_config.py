@@ -1,16 +1,18 @@
 # web/tests/test_config.py
-
 import os
 import unittest
 
 from flask import current_app
+from flask_testing import TestCase
 
-from web.tests.component.mixins import BaseTestCase
+from web.domain import APP_SETTINGS, create_app
+
+app = create_app()
 
 
-class TestDevelopmentConfig(BaseTestCase):
+class TestDevelopmentConfig(TestCase):
     def create_app(self):
-        app = super().create_app(app_settings="Development")
+        app.config.from_object(APP_SETTINGS["Development"])
         return app
 
     def test_app_is_development(self):
@@ -19,9 +21,9 @@ class TestDevelopmentConfig(BaseTestCase):
         self.assertFalse(current_app is None)
 
 
-class TestTestingConfig(BaseTestCase):
+class TestTestingConfig(TestCase):
     def create_app(self):
-        app = super().create_app(app_settings="Test")
+        app.config.from_object(APP_SETTINGS["Test"])
         return app
 
     def test_app_is_testing(self):
@@ -30,9 +32,9 @@ class TestTestingConfig(BaseTestCase):
         self.assertFalse(current_app is None)
 
 
-class TestProductionConfig(BaseTestCase):
+class TestProductionConfig(TestCase):
     def create_app(self):
-        app = super().create_app(app_settings="Production")
+        app.config.from_object(APP_SETTINGS["Production"])
         return app
 
     def test_app_is_production(self):
