@@ -18,6 +18,11 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         self.__when_first_user_send_invitation_to_second_user()
         self.__then_user_get_400_when_invitations_has_been_send_twice()
 
+    def test_return_400_when_user_send_invitation_to_unknown_user(self):
+        self.__given_three_registered_users()
+        self.__when_first_user_send_invitation_to_unknown_user()
+        self.__then_return_400_when_user_send_invitation_to_unknown_user()
+
     @pytest.mark.skip(reason="TO DO")
     def test_user_receive_invitaion_from_another_user_when_user_sent_invitation(self):
         self.__given_three_registered_users()
@@ -103,6 +108,10 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         json = {"username": self.user_data[1]["username"]}
         self.response = self.send_invitation_to_user(headers=self.headers[0], json=json)
 
+    def __when_first_user_send_invitation_to_unknown_user(self):
+        json = {"username": "Test"}
+        self.response = self.send_invitation_to_user(headers=self.headers[0], json=json)
+
     def __when_second_user_send_invitation_to_third_user(self):
         json = {"username": self.user_data[2]["username"]}
         self.response = self.send_invitation_to_user(headers=self.headers[1], json=json)
@@ -140,6 +149,11 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
     def __then_user_get_400_when_invitations_has_been_send_twice(self):
         self.assertEqual(400, self.response.status_code)
         expected_json = {"status": "fail", "message": "Already exists."}
+        self.assertEqual(expected_json, self.response.json)
+
+    def __then_return_400_when_user_send_invitation_to_unknown_user(self):
+        self.assertEqual(400, self.response.status_code)
+        expected_json = {"status": "fail", "message": "User does not exist."}
         self.assertEqual(expected_json, self.response.json)
 
     def __then_invition_from_first_user_is_waiting(self):

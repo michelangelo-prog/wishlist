@@ -3,7 +3,7 @@ from marshmallow import ValidationError
 
 from web.domain.decorators import token_required
 from web.domain.models.friendships import Friendship
-from web.domain.models.users import User
+from web.domain.models.users import User, UserDoesNotExist
 
 friendship_blueprint = Blueprint("friendship", __name__)
 
@@ -20,5 +20,5 @@ def send_invitation(current_user):
         user = User.get_user_by_username(username)
         Friendship.add_invitation(action_user=current_user, user=user)
         return jsonify({"status": "success"}), 201
-    except ValidationError as e:
+    except (ValidationError, UserDoesNotExist) as e:
         return jsonify({"status": "fail", "message": str(e)}), 400

@@ -6,12 +6,19 @@ from flask import current_app
 from marshmallow import Schema, ValidationError, fields
 from sqlalchemy import Boolean, Column, String
 from sqlalchemy.orm import validates
+from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from web.domain import db
 from web.domain.models.behaviors import CreateAtMixin, IdMixin, UpdateAtMixin
 
 TOKEN_ALGORITHM = "HS256"
+
+
+class UserDoesNotExist(Exception):
+    """Raise when user does not exist."""
+
+    pass
 
 
 class User(IdMixin, CreateAtMixin, UpdateAtMixin, db.Model):
@@ -87,7 +94,10 @@ class User(IdMixin, CreateAtMixin, UpdateAtMixin, db.Model):
 
     @classmethod
     def get_user_by_username(cls, username):
-        return cls.query.filter_by(username=username).one()
+        try:
+            return cls.query.filter_by(username=username).one()
+        except NoResultFound:
+            raise UserDoesNotExist("User does not exist.")
 
     @classmethod
     def decode_auth_token(cls, token):
