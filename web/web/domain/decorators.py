@@ -7,7 +7,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from web.domain.helpers import get_authorization_from_request_headers
 from web.domain.models.blacklisttokens import BlacklistToken
-from web.domain.models.users import User
+from web.domain.models.users import User, UserDoesNotExist
 
 invalid_msg = {
     "message": "Invalid token. Registeration and / or authentication required",
@@ -43,7 +43,7 @@ def token_required(f):
             return f(user, *args, **kwargs)
         except ExpiredSignatureError:
             return jsonify(expired_msg), 401
-        except (InvalidTokenError, NoResultFound):
+        except (InvalidTokenError, UserDoesNotExist):
             return jsonify(invalid_msg), 401
 
     return _verify

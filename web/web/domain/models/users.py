@@ -90,7 +90,10 @@ class User(IdMixin, CreateAtMixin, UpdateAtMixin, db.Model):
 
     @classmethod
     def get_user_by_email(cls, email):
-        return cls.query.filter_by(email=email).one()
+        try:
+            return cls.query.filter_by(email=email).one()
+        except NoResultFound:
+            raise UserDoesNotExist("User does not exist.")
 
     @classmethod
     def get_user_by_username(cls, username):
