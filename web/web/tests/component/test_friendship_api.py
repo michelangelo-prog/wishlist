@@ -10,25 +10,24 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
     def test_user_can_send_invitation_to_another_user(self):
         self.__given_two_registered_users()
         self.__when_user_send_invitation(
-            action_user_header=self.users_headers[0],
+            action_user_header=self.users_data[0]["headers"],
             username=self.users_data[1]["username"],
         )
         self.__then_user_get_201_when_invitation_has_been_successfully_sent()
 
     def __given_two_registered_users(self):
-        self.users_data, self.users_headers = self.create_users(number_of_users=2)
+        self.users_data = self.create_users(number_of_users=2)
 
     def create_users(self, number_of_users):
         users_data = [UserFactory.build() for i in range(number_of_users)]
-        users_headers = []
 
         for user_data in users_data:
             self.register_user(user_data)
             login_response = self.login_user(user_data)
             user_header = self.__prepare_user_header(login_response.json["token"])
-            users_headers.append(user_header)
+            user_data["headers"] = user_header
 
-        return users_data, users_headers
+        return users_data
 
     def register_user(self, user_data):
         response = self.send_register_user(json=user_data)
@@ -64,9 +63,9 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         self.__then_user_get_400_when_same_invitation_has_been_sent_twice()
 
     def __user_send_invitation(self):
-        self.users_data, self.users_headers = self.create_users(number_of_users=2)
+        self.users_data = self.create_users(number_of_users=2)
         self.send_invitation(
-            action_user_header=self.users_headers[0],
+            action_user_header=self.users_data[0]["headers"],
             username=self.users_data[1]["username"],
         )
 
@@ -78,7 +77,7 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
 
     def __when_user_send_invitation_to_user_who_alredy_has_invitation(self):
         self.__when_user_send_invitation(
-            action_user_header=self.users_headers[0],
+            action_user_header=self.users_data[0]["headers"],
             username=self.users_data[1]["username"],
         )
 
@@ -90,7 +89,7 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
     def test_return_400_when_user_send_invitation_to_unknown_user(self):
         self.__given_two_registered_users()
         self.__when_user_send_invitation(
-            action_user_header=self.users_headers[0], username="Test",
+            action_user_header=self.users_data[0]["headers"], username="Test",
         )
         self.__then_return_400_when_user_send_invitation_to_unknown_user()
 
