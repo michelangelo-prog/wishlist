@@ -12,16 +12,12 @@ class FriendshipRequestSchema(Schema):
     username = fields.Str(required=True)
 
 
-def get_username_from_request_json(request):
-    return request.get_json().pop("username", None)
-
-
 @friendship_blueprint.route("/invitations", methods=["POST"])
 @token_required
 @request_schema(FriendshipRequestSchema)
-def send_invitation(current_user):
+def send_invitation(json_data, current_user):
     try:
-        username = get_username_from_request_json(request)
+        username = json_data["username"]
         user = User.get_user_by_username(username)
         Friendship.add_invitation(action_user=current_user, user=user)
         return jsonify({"status": "success"}), 201

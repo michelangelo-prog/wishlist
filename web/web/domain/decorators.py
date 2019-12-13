@@ -56,10 +56,10 @@ def request_schema(schema):
         def wrapper(*args, **kwargs):
             json = request.get_json()
             try:
-                schema().load(json)
+                json_data = schema().load(json)
             except ValidationError:
                 return jsonify({"status": "fail", "message": "Invalid json."}), 400
-            return f(*args, **kwargs)
+            return f(json_data, *args, **kwargs)
 
         return wrapper
 
