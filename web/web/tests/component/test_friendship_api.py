@@ -111,6 +111,31 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         expected_json = {"status": "fail", "message": "Invalid json."}
         self.assertEqual(expected_json, self.response.json)
 
+    def test_return_400_when_send_invitation_with_additional_data_in_json(self):
+        self.__given_two_registered_users()
+        self.__when_user_send_invitation_with_invalid_json(
+            action_user_header=self.users_data[0]["headers"],
+            json={"username": self.users_data[1]["username"], "test": "test"},
+        )
+        self.__then_return_400_when_user_sent_invalid_json()
+
+    def __when_user_send_invitation_with_invalid_json(self, action_user_header, json):
+        self.response = self.send_invitation_to_user(
+            headers=action_user_header, json=json
+        )
+
+    def __then_return_400_when_user_sent_invalid_json(self):
+        self.assertEqual(400, self.response.status_code)
+        expected_json = {"status": "fail", "message": "Invalid json."}
+        self.assertEqual(expected_json, self.response.json)
+
+    def test_return_400_when_send_invitation_with_invalid_data_in_json(self):
+        self.__given_two_registered_users()
+        self.__when_user_send_invitation_with_invalid_json(
+            action_user_header=self.users_data[0]["headers"], json={"test": "test"}
+        )
+        self.__then_return_400_when_user_sent_invalid_json()
+
     # @pytest.mark.skip(reason="TO DO")
     # def test_user_receive_invitaion_from_another_user_when_user_sent_invitation(self):
     #     self.__given_three_registered_users()
