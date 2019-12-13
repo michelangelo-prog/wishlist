@@ -1,7 +1,5 @@
 import unittest
 
-import pytest
-
 from web.tests.component.mixins import BaseTestCase, FriendshipMixin, UserMixin
 from web.tests.factories import UserFactory
 
@@ -89,7 +87,7 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
     def test_return_400_when_user_send_invitation_to_unknown_user(self):
         self.__given_two_registered_users()
         self.__when_user_send_invitation(
-            action_user_header=self.users_data[0]["headers"], username="Test",
+            action_user_header=self.users_data[0]["headers"], username="Test"
         )
         self.__then_return_400_when_user_send_invitation_to_unknown_user()
 
@@ -98,7 +96,21 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         expected_json = {"status": "fail", "message": "User does not exist."}
         self.assertEqual(expected_json, self.response.json)
 
-    # @pytest.mark.skip(reason="TO DO")
+    def test_return_400_when_user_send_invitation_without_json(self):
+        self.__given_two_registered_users()
+        self.__when_user_send_invitation_without_username(
+            action_user_header=self.users_data[0]["headers"]
+        )
+        self.__then_return_400_when_user_sent_invitation_without_json()
+
+    def __when_user_send_invitation_without_username(self, action_user_header):
+        self.response = self.send_invitation_to_user(headers=action_user_header)
+
+    def __then_return_400_when_user_sent_invitation_without_json(self):
+        self.assertEqual(400, self.response.status_code)
+        expected_json = {"status": "fail", "message": "Invalid json."}
+        self.assertEqual(expected_json, self.response.json)
+
     # def test_return_400_when_user_send_invitation_without_json(self):
     #     self.__given_three_registered_users()
     #     self.__when_first_user_send_invitation_without_json()

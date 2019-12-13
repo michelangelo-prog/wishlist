@@ -3,6 +3,7 @@ from functools import wraps
 
 from flask import jsonify, request
 from jwt import ExpiredSignatureError, InvalidTokenError
+from marshmallow import ValidationError
 from sqlalchemy.orm.exc import NoResultFound
 
 from web.domain.helpers import get_authorization_from_request_headers
@@ -47,3 +48,19 @@ def token_required(f):
             return jsonify(invalid_msg), 401
 
     return _verify
+
+
+def request_schema(schema):
+    def _verify_schema(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            json = request.get_json()
+            try:
+                schema().load(json)
+            except ValidationError:
+                return jsonify({"status": "fail", "message": "Invalid json."}), 400
+            return f(*args, **kwargs)
+
+        return wrapper
+
+    return _verify_schema
