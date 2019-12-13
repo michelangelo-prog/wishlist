@@ -111,11 +111,6 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         expected_json = {"status": "fail", "message": "Invalid json."}
         self.assertEqual(expected_json, self.response.json)
 
-    # def test_return_400_when_user_send_invitation_without_json(self):
-    #     self.__given_three_registered_users()
-    #     self.__when_first_user_send_invitation_without_json()
-    #     self.__then_return_400_when_user_send_invitation_without_json()
-    #
     # @pytest.mark.skip(reason="TO DO")
     # def test_user_receive_invitaion_from_another_user_when_user_sent_invitation(self):
     #     self.__given_three_registered_users()
