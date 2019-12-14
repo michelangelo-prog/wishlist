@@ -136,6 +136,26 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         )
         self.__then_return_400_when_user_sent_invalid_json()
 
+    def test_user_can_list_waiting_invitations_from_users(self):
+        self.__user_send_invitation()
+        self.__when_user_check_if_have_invitations_from_another_users(
+            action_user_header=self.users_data[1]["headers"]
+        )
+        self.__then_return_200_and_one_pending_invitation()
+
+    def __when_user_check_if_have_invitations_from_another_users(
+        self, action_user_header
+    ):
+        self.response = self.get_invitations_from_users(headers=action_user_header)
+
+    def __then_return_200_and_one_pending_invitation(self):
+        self.assertEqual(200, self.response.status_code)
+        expected_json = {
+            "status": "success",
+            "results": [{"username": self.users_data[0]["username"]}],
+        }
+        self.assertEqual(expected_json, self.response.json)
+
     # @pytest.mark.skip(reason="TO DO")
     # def test_user_receive_invitaion_from_another_user_when_user_sent_invitation(self):
     #     self.__given_three_registered_users()
