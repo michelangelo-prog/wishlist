@@ -41,5 +41,9 @@ class Friendship(IdMixin, db.Model):
             return user_two, user_one
 
     def __check_if_invitaion_already_exists(self, **kwargs):
-        if self.query.filter_by(**kwargs).one_or_none():
+        if self.query.filter_by(
+            user_one=kwargs["user_one"],
+            user_two=kwargs["user_two"],
+            status=kwargs["status"],
+        ).one_or_none():
             raise ValidationError("Already exists.")
