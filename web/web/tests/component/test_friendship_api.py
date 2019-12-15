@@ -175,12 +175,6 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         expected_json = {"results": []}
         self.assertEqual(expected_json, self.response.json)
 
-    # @pytest.mark.skip(reason="TO DO")
-    # def test_user_receive_invitaion_from_another_user_when_user_sent_invitation(self):
-    #     self.__given_three_registered_users()
-    #     self.__when_first_user_send_invitation_to_second_user()
-    #     self.__when_second_user_check_invitations_from_another_users()
-    #     self.__then_invition_from_first_user_is_waiting()
     #
     # @pytest.mark.skip(reason="TO DO")
     # def test_second_user_can_accept_invitation_from_first_user(self):
