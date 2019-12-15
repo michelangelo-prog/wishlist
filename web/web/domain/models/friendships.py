@@ -35,6 +35,17 @@ class Friendship(IdMixin, db.Model):
         db.session.add(obj)
         db.session.commit()
 
+    @classmethod
+    def get_pending_users(cls, user):
+        objs = cls.query.filter(
+            (cls.action_user != user)
+            & ((cls.user_two == user) | (cls.user_one == user))
+        ).all()
+        return [
+            obj.user_two if obj.user_one.username == user.username else obj.user_one
+            for obj in objs
+        ]
+
     def __set_up_users_order(cls, user_one, user_two):
         if user_one.id < user_two.id:
             return user_one, user_two

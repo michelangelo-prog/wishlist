@@ -22,3 +22,10 @@ def send_invitation(json_data, current_user):
         return jsonify({"status": "success"}), 201
     except (ValidationError, UserDoesNotExist) as e:
         return jsonify({"status": "fail", "message": str(e)}), 400
+
+
+@friendship_blueprint.route("/invitations/pending", methods=["GET"])
+@token_required
+def list_invitations_from_users(current_user):
+    users = Friendship.get_pending_users(current_user)
+    return jsonify({"results": [{"username": user.username} for user in users]}), 200

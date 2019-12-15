@@ -160,10 +160,7 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
 
     def __then_return_200_and_one_pending_invitation(self):
         self.assertEqual(200, self.response.status_code)
-        expected_json = {
-            "status": "success",
-            "results": [{"username": self.users_data[0]["username"]}],
-        }
+        expected_json = {"results": [{"username": self.users_data[0]["username"]}]}
         self.assertEqual(expected_json, self.response.json)
 
     # @pytest.mark.skip(reason="TO DO")
