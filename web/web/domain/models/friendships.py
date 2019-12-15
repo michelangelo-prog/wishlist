@@ -24,7 +24,7 @@ class Friendship(IdMixin, db.Model):
         kwargs["user_one"], kwargs["user_two"] = self.__set_up_users_order(
             kwargs["user_one"], kwargs["user_two"]
         )
-        self.__check_if_invitaion_already_exists(**kwargs)
+        self.__check_if_invitation_already_exists(**kwargs)
         super().__init__(**kwargs)
 
     @classmethod
@@ -41,7 +41,7 @@ class Friendship(IdMixin, db.Model):
         else:
             return user_two, user_one
 
-    def __check_if_invitaion_already_exists(self, **kwargs):
+    def __check_if_invitation_already_exists(self, **kwargs):
         if self.query.filter_by(
             user_one=kwargs["user_one"],
             user_two=kwargs["user_two"],

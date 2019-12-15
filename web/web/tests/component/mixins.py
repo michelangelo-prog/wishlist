@@ -63,7 +63,7 @@ class FriendshipMixin:
         return self.client.post(uri, **kwargs)
 
     def get_invitations_from_users(self, **kwargs):
-        uri = "/api/v1/friendships/invitations"
+        uri = "/api/v1/friendships/invitations/pending"
         return self.client.get(uri, **kwargs)
 
     def send_accept_invitation(self, **kwargs):

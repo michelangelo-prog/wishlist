@@ -146,7 +146,7 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         )
         self.__then_user_get_400_when_same_invitation_has_been_sent_twice()
 
-    def test_user_can_list_waiting_invitations_from_users(self):
+    def test_user_can_list_invitations_for_acceptance(self):
         self.__given_two_users_and_one_sent_invitation()
         self.__when_user_check_if_have_invitations_from_another_users(
             action_user_header=self.users_data[1]["headers"]
