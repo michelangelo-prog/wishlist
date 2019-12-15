@@ -56,11 +56,11 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         self.assertEqual(expected_json, self.response.json)
 
     def test_return_400_when_user_send_invitation_twice(self):
-        self.__user_send_invitation()
+        self.__given_two_users_and_one_sent_invitation()
         self.__when_user_send_invitation_to_user_who_alredy_has_invitation()
         self.__then_user_get_400_when_same_invitation_has_been_sent_twice()
 
-    def __user_send_invitation(self):
+    def __given_two_users_and_one_sent_invitation(self):
         self.users_data = self.create_users(number_of_users=2)
         self.send_invitation(
             action_user_header=self.users_data[0]["headers"],
@@ -136,8 +136,26 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         )
         self.__then_return_400_when_user_sent_invalid_json()
 
+    def test_return_400_when_user_send_invitation_to_user_who_has_sent_invitation_already(
+        self,
+    ):
+        self.__given_two_users_and_one_sent_invitation()
+        self.__when_user_send_invitation(
+            action_user_header=self.users_data[1]["headers"],
+            username=self.users_data[0]["username"],
+        )
+        self.__then_user_get_400_when_invitation_from_another_user_exists()
+
+    def __then_user_get_400_when_invitation_from_another_user_exists(self):
+        self.assertEqual(400, self.response.status_code)
+        expected_json = {
+            "status": "fail",
+            "message": "Invitation from this user is waiting for acceptance.",
+        }
+        self.assertEqual(expected_json, self.response.json)
+
     def test_user_can_list_waiting_invitations_from_users(self):
-        self.__user_send_invitation()
+        self.__given_two_users_and_one_sent_invitation()
         self.__when_user_check_if_have_invitations_from_another_users(
             action_user_header=self.users_data[1]["headers"]
         )
