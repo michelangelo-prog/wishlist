@@ -21,20 +21,21 @@ class Friendship(IdMixin, db.Model):
     action_user = relationship("User", foreign_keys=[action_user_id])
 
     def __init__(self, **kwargs):
+        kwargs["user_one"], kwargs["user_two"] = self.__set_up_users_order(
+            kwargs["user_one"], kwargs["user_two"]
+        )
         self.__check_if_invitaion_already_exists(**kwargs)
         super().__init__(**kwargs)
 
     @classmethod
     def add_invitation(cls, action_user, user):
-        user_one, user_two = cls.__get_users_in_order(action_user, user)
         obj = cls(
-            user_one=user_one, user_two=user_two, status=1, action_user=action_user
+            user_one=action_user, user_two=user, status=1, action_user=action_user
         )
         db.session.add(obj)
         db.session.commit()
 
-    @classmethod
-    def __get_users_in_order(cls, user_one, user_two):
+    def __set_up_users_order(cls, user_one, user_two):
         if user_one.id < user_two.id:
             return user_one, user_two
         else:
