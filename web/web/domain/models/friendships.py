@@ -27,26 +27,7 @@ class Friendship(IdMixin, db.Model):
         self.__check_if_invitation_already_exists(**kwargs)
         super().__init__(**kwargs)
 
-    @classmethod
-    def add_invitation(cls, action_user, user):
-        obj = cls(
-            user_one=action_user, user_two=user, status=1, action_user=action_user
-        )
-        db.session.add(obj)
-        db.session.commit()
-
-    @classmethod
-    def get_pending_users(cls, user):
-        objs = cls.query.filter(
-            (cls.action_user != user)
-            & ((cls.user_two == user) | (cls.user_one == user))
-        ).all()
-        return [
-            obj.user_two if obj.user_one.username == user.username else obj.user_one
-            for obj in objs
-        ]
-
-    def __set_up_users_order(cls, user_one, user_two):
+    def __set_up_users_order(self, user_one, user_two):
         if user_one.id < user_two.id:
             return user_one, user_two
         else:
@@ -59,3 +40,26 @@ class Friendship(IdMixin, db.Model):
             status=kwargs["status"],
         ).one_or_none():
             raise ValidationError("Already exists.")
+
+    @classmethod
+    def add_invitation(cls, action_user, user):
+        obj = cls(
+            user_one=action_user, user_two=user, status=1, action_user=action_user
+        )
+        db.session.add(obj)
+        db.session.commit()
+
+    @classmethod
+    def get_list_of_pending_users(cls, user):
+        objs = cls.get_user_pending_friendships(user)
+        return [
+            obj.user_two if obj.user_one.username == user.username else obj.user_one
+            for obj in objs
+        ]
+
+    @classmethod
+    def get_user_pending_friendships(cls, user):
+        return cls.query.filter(
+            (cls.action_user != user)
+            & ((cls.user_two == user) | (cls.user_one == user))
+        ).all()

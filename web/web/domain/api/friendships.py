@@ -27,5 +27,5 @@ def send_invitation(json_data, current_user):
 @friendship_blueprint.route("/invitations/pending", methods=["GET"])
 @token_required
 def list_invitations_from_users(current_user):
-    users = Friendship.get_pending_users(current_user)
+    users = Friendship.get_list_of_pending_users(current_user)
     return jsonify({"results": [{"username": user.username} for user in users]}), 200
