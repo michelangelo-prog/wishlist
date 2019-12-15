@@ -163,6 +163,18 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         expected_json = {"results": [{"username": self.users_data[0]["username"]}]}
         self.assertEqual(expected_json, self.response.json)
 
+    def test_get_empty_pending_list_when_user_have_no_invitation_to_accept(self):
+        self.__given_two_registered_users()
+        self.__when_user_check_if_have_invitations_from_another_users(
+            action_user_header=self.users_data[1]["headers"]
+        )
+        self.__then_return_200_and_empty_pending_invitation_list()
+
+    def __then_return_200_and_empty_pending_invitation_list(self):
+        self.assertEqual(200, self.response.status_code)
+        expected_json = {"results": []}
+        self.assertEqual(expected_json, self.response.json)
+
     # @pytest.mark.skip(reason="TO DO")
     # def test_user_receive_invitaion_from_another_user_when_user_sent_invitation(self):
     #     self.__given_three_registered_users()
