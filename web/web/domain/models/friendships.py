@@ -57,9 +57,13 @@ class Friendship(IdMixin, db.Model):
     @classmethod
     def get_list_of_pending_users(cls, user):
         objs = cls.get_user_pending_friendships(user)
+        return cls.__get_users_from_friendships_objects(user, objs)
+
+    @classmethod
+    def __get_users_from_friendships_objects(cls, user, friendships):
         return [
             obj.user_two if obj.user_one.username == user.username else obj.user_one
-            for obj in objs
+            for obj in friendships
         ]
 
     @classmethod
@@ -94,10 +98,7 @@ class Friendship(IdMixin, db.Model):
     @classmethod
     def get_list_of_user_friends(cls, user):
         objs = cls.get_user_accepted_friendships(user)
-        return [
-            obj.user_two if obj.user_one.username == user.username else obj.user_one
-            for obj in objs
-        ]
+        return cls.__get_users_from_friendships_objects(user, objs)
 
     @classmethod
     def get_user_accepted_friendships(cls, user):
