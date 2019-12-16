@@ -78,6 +78,6 @@ class FriendshipMixin:
         uri = "api/v1/friendships/all"
         return self.client.get(uri, **kwargs)
 
-    def send_delete_freindship(self, **kwargs):
+    def send_delete_friend(self, **kwargs):
         uri = "/api/v1/friendships/delete"
         return self.client.delete(uri, **kwargs)
