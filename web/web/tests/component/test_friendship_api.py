@@ -175,6 +175,25 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         expected_json = {"results": []}
         self.assertEqual(expected_json, self.response.json)
 
+    def test_user_accept_invitation_from_another_user(self):
+        self.__given_two_users_and_one_sent_invitation()
+        self.__when_user_accept_invitation(
+            action_user_header=self.users_data[1]["headers"],
+            username=self.users_data[0]["username"],
+        )
+        self.__then_user_get_200_and_json_with_success_status()
+
+    def __when_user_accept_invitation(self, action_user_header, username):
+        json = {"username": username}
+        self.response = self.send_accept_invitation(
+            headers=action_user_header, json=json
+        )
+
+    def __then_user_get_200_and_json_with_success_status(self):
+        self.assertEqual(200, self.response.status_code)
+        expected_json = {"status": "success"}
+        self.assertEqual(expected_json, self.response.json)
+
     #
     # @pytest.mark.skip(reason="TO DO")
     # def test_second_user_can_accept_invitation_from_first_user(self):
