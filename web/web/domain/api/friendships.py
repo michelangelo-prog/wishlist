@@ -41,3 +41,13 @@ def accept_invitation_from_user(json_data, current_user):
         return jsonify({"status": "success"}), 200
     except (ValidationError, UserDoesNotExist, FriendshipDoesNotExist):
         abort(400)
+
+
+@friendship_blueprint.route("/all", methods=["GET"])
+@token_required
+def get_all_friends(current_user):
+    user_friends = Friendship.get_list_of_user_friends(current_user)
+    return (
+        jsonify({"results": [{"username": user.username} for user in user_friends]}),
+        200,
+    )

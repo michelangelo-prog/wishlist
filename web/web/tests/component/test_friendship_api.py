@@ -63,15 +63,15 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
     def __given_two_users_and_one_sent_invitation(self):
         self.users_data = self.create_users(number_of_users=2)
         self.send_invitation(
-            action_user_header=self.users_data[0]["headers"],
-            username=self.users_data[1]["username"],
+            action_user_data=self.users_data[0], to_user_data=self.users_data[1]
         )
 
-    def send_invitation(self, action_user_header, username):
-        json = {"username": username}
-        response = self.send_invitation_to_user(headers=action_user_header, json=json)
+    def send_invitation(self, action_user_data, to_user_data):
+        json = {"username": to_user_data["username"]}
+        response = self.send_invitation_to_user(
+            headers=action_user_data["headers"], json=json
+        )
         self.assertEqual(201, response.status_code)
-        return response
 
     def __when_user_send_invitation_to_user_who_alredy_has_invitation(self):
         self.__when_user_send_invitation(
@@ -213,6 +213,66 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
             action_user_header=self.users_data[1]["headers"], username="TEST"
         )
         self.__then_user_get_400_with_error()
+
+    def test_user_have_four_friends(self):
+        self.__given_user_with_four_friends()
+        self.__when_user_check_if_have_any_friends(
+            action_user_header=self.users_data[0]["headers"]
+        )
+        self.__then_user_get_list_with_four_friends()
+
+    def __given_user_with_four_friends(self):
+        self.users_data = self.create_users(number_of_users=5)
+
+        for user_data in self.users_data[1:]:
+            self.send_invitation(
+                action_user_data=user_data, to_user_data=self.users_data[0]
+            )
+            self.accept_invitation(
+                action_user_data=self.users_data[0], from_user_data=user_data
+            )
+
+    def accept_invitation(self, action_user_data, from_user_data):
+        json = {"username": from_user_data["username"]}
+        response = self.send_accept_invitation(
+            headers=action_user_data["headers"], json=json
+        )
+        self.assertEqual(200, response.status_code)
+
+    def __when_user_check_if_have_any_friends(self, action_user_header):
+        self.response = self.get_list_of_friends(headers=action_user_header)
+
+    def __then_user_get_list_with_four_friends(self):
+        self.assertEqual(200, self.response.status_code)
+        json = self.response.json
+        self.assertEqual(4, len(json["results"]))
+
+        for user_data, result in zip(self.users_data[1:], json["results"]):
+            self.assertEqual(user_data["username"], result["username"])
+
+    def test_user_have_one_friend(self):
+        self.__given_user_with_four_friends()
+        self.__when_user_check_if_have_any_friends(
+            action_user_header=self.users_data[1]["headers"]
+        )
+        self.__then_user_have_one_friend()
+
+    def __then_user_have_one_friend(self):
+        self.assertEqual(200, self.response.status_code)
+        json = self.response.json
+        self.assertEqual(1, len(json["results"]))
+
+    def test_when_user_have_no_friends(self):
+        self.__given_two_registered_users()
+        self.__when_user_check_if_have_any_friends(
+            action_user_header=self.users_data[1]["headers"]
+        )
+        self.__then_user_have_no_friends()
+
+    def __then_user_have_no_friends(self):
+        self.assertEqual(200, self.response.status_code)
+        json = self.response.json
+        self.assertEqual(0, len(json["results"]))
 
     # @pytest.mark.skip(reason="TO DO")
     # def test_when_second_user_accept_invitation_and_have_friend(self):

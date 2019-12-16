@@ -66,6 +66,7 @@ class Friendship(IdMixin, db.Model):
     def get_user_pending_friendships(cls, user):
         return cls.query.filter(
             (cls.action_user != user)
+            & (cls.status == 1)
             & ((cls.user_two == user) | (cls.user_one == user))
         ).all()
 
@@ -89,3 +90,17 @@ class Friendship(IdMixin, db.Model):
     @classmethod
     def get_obj_using_filter(cls, **kwargs):
         return cls.query.filter_by(**kwargs).one_or_none()
+
+    @classmethod
+    def get_list_of_user_friends(cls, user):
+        objs = cls.get_user_accepted_friendships(user)
+        return [
+            obj.user_two if obj.user_one.username == user.username else obj.user_one
+            for obj in objs
+        ]
+
+    @classmethod
+    def get_user_accepted_friendships(cls, user):
+        return cls.query.filter(
+            (cls.status == 2) & ((cls.user_two == user) | (cls.user_one == user))
+        ).all()
