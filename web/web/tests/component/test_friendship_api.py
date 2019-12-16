@@ -274,23 +274,6 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         json = self.response.json
         self.assertEqual(0, len(json["results"]))
 
-    # @pytest.mark.skip(reason="TO DO")
-    # def test_when_second_user_accept_invitation_and_have_friend(self):
-    #     self.__given_three_registered_users()
-    #     self.__when_first_user_send_invitation_to_second_user()
-    #     self.__when_second_user_accept_invitation_from_first_user()
-    #     self.__when_second_user_check_if_have_any_friends()
-    #     self.__then_second_user_have_friend()
-    #
-    # @pytest.mark.skip(reason="TO DO")
-    # def test_second_user_accept_invitation_from_first_user_and_first_user_have_friend(
-    #     self,
-    # ):
-    #     self.__given_three_registered_users()
-    #     self.__when_first_user_send_invitation_to_second_user()
-    #     self.__when_second_user_accept_invitation_from_first_user()
-    #     self.__when_first_user_check_if_have_any_friends()
-    #     self.__then_first_user_have_friend()
     #
     # @pytest.mark.skip(reason="TO DO")
     # def test_when_user_delete_friend_from_friendships(self):
