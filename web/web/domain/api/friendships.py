@@ -1,8 +1,8 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, abort, jsonify
 from marshmallow import Schema, ValidationError, fields
 
 from web.domain.decorators import request_schema, token_required
-from web.domain.models.friendships import Friendship
+from web.domain.models.friendships import Friendship, FriendshipDoesNotExist
 from web.domain.models.users import User, UserDoesNotExist
 
 friendship_blueprint = Blueprint("friendship", __name__)
@@ -39,5 +39,5 @@ def accept_invitation_from_user(json_data, current_user):
         user = User.get_user_by_username(json_data["username"])
         Friendship.accept_invitation(action_user=current_user, user=user)
         return jsonify({"status": "success"}), 200
-    except (ValidationError, UserDoesNotExist) as e:
-        return jsonify({"status": "fail", "message": str(e)}), 400
+    except (ValidationError, UserDoesNotExist, FriendshipDoesNotExist):
+        abort(400)

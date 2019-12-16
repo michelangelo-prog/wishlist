@@ -9,6 +9,12 @@ from web.domain.models.behaviors import IdMixin
 STATUS = {1: "Pending", 2: "Accepted", 3: "Declined", 4: "Blocked"}
 
 
+class FriendshipDoesNotExist(Exception):
+    """Raise when Friendship does not exists."""
+
+    pass
+
+
 class Friendship(IdMixin, db.Model):
     __tablename__ = "friendships"
 
@@ -66,12 +72,19 @@ class Friendship(IdMixin, db.Model):
     @classmethod
     def accept_invitation(cls, action_user, user):
         user_one, user_two = cls.set_up_users_order(action_user, user)
-        pending_invitation = cls.get_obj_using_filter(
+        pending_invitation = cls.get_obj_using_filter_or_raise_exception(
             user_one=user_one, user_two=user_two, status=1, action_user=user
         )
         pending_invitation.status = 2
         pending_invitation.action_user = action_user
         db.session.commit()
+
+    @classmethod
+    def get_obj_using_filter_or_raise_exception(cls, **kwargs):
+        obj = cls.get_obj_using_filter(**kwargs)
+        if not obj:
+            raise FriendshipDoesNotExist
+        return obj
 
     @classmethod
     def get_obj_using_filter(cls, **kwargs):

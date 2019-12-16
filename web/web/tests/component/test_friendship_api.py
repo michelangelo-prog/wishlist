@@ -194,21 +194,26 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         expected_json = {"status": "success"}
         self.assertEqual(expected_json, self.response.json)
 
-    #
-    # @pytest.mark.skip(reason="TO DO")
-    # def test_second_user_can_accept_invitation_from_first_user(self):
-    #     self.__given_three_registered_users()
-    #     self.__when_first_user_send_invitation_to_second_user()
-    #     self.__when_second_user_accept_invitation_from_first_user()
-    #     self.__then_second_user_get_204_when_invitation_has_been_successfully_accepted()
-    #
-    # @pytest.mark.skip(reason="TO DO")
-    # def test_second_user_can_decline_invitation_from_first_user(self):
-    #     self.__given_three_registered_users()
-    #     self.__when_first_user_send_invitation_to_second_user()
-    #     self.__when_second_user_decline_invitation_from_first_user()
-    #     self.__then_user_get_204_when_invitation_has_been_successfully_declined()
-    #
+    def test_return_400_if_accept_not_existing_invitation(self):
+        self.__given_two_registered_users()
+        self.__when_user_accept_invitation(
+            action_user_header=self.users_data[1]["headers"],
+            username=self.users_data[0]["username"],
+        )
+        self.__then_user_get_400_with_error()
+
+    def __then_user_get_400_with_error(self):
+        self.assertEqual(400, self.response.status_code)
+        expected_json = {"error": "Bad Request"}
+        self.assertEqual(expected_json, self.response.json)
+
+    def test_return_400_if_accept_not_existing_user(self):
+        self.__given_two_users_and_one_sent_invitation()
+        self.__when_user_accept_invitation(
+            action_user_header=self.users_data[1]["headers"], username="TEST"
+        )
+        self.__then_user_get_400_with_error()
+
     # @pytest.mark.skip(reason="TO DO")
     # def test_when_second_user_accept_invitation_and_have_friend(self):
     #     self.__given_three_registered_users()
