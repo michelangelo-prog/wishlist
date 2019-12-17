@@ -286,6 +286,20 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         json = self.response.json
         self.assertEqual(0, len(json["results"]))
 
+    def test_user_can_decline_inviation(self):
+        self.__given_two_users_and_one_sent_invitation()
+        self.action_user_headers = self.users_data[1]["headers"]
+        self.json = {"username": self.users_data[0]["username"]}
+        self.__when_user_decline_invitation(
+            action_user_headers=self.action_user_headers, json=self.json
+        )
+        self.__then_user_get_200_and_json_with_success_status()
+
+    def __when_user_decline_invitation(self, action_user_headers, json):
+        self.response = self.send_decline_invitation(
+            headers=action_user_headers, json=json
+        )
+
     #
     # @pytest.mark.skip(reason="TO DO")
     # def test_when_user_delete_friend_from_friendships(self):

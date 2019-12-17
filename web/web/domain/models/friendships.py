@@ -105,3 +105,13 @@ class Friendship(IdMixin, db.Model):
         return cls.query.filter(
             (cls.status == 2) & ((cls.user_two == user) | (cls.user_one == user))
         ).all()
+
+    @classmethod
+    def decline_invitation(cls, action_user, user):
+        user_one, user_two = cls.set_up_users_order(action_user, user)
+        pending_invitation = cls.get_obj_using_filter_or_raise_exception(
+            user_one=user_one, user_two=user_two, status=1
+        )
+
+        db.session.delete(pending_invitation)
+        db.session.commit()

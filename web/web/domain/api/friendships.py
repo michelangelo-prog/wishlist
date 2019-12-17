@@ -39,7 +39,19 @@ def accept_invitation_from_user(json_data, current_user):
         user = User.get_user_by_username(json_data["username"])
         Friendship.accept_invitation(action_user=current_user, user=user)
         return jsonify({"status": "success"}), 200
-    except (ValidationError, UserDoesNotExist, FriendshipDoesNotExist):
+    except (UserDoesNotExist, FriendshipDoesNotExist):
+        abort(400)
+
+
+@friendship_blueprint.route("/invitations", methods=["DELETE"])
+@token_required
+@request_schema(FriendshipRequestSchema)
+def decline_invitation_from_user(json_data, current_user):
+    try:
+        user = User.get_user_by_username(json_data["username"])
+        Friendship.decline_invitation(action_user=current_user, user=user)
+        return jsonify({"status": "success"}), 200
+    except (UserDoesNotExist, FriendshipDoesNotExist):
         abort(400)
 
 
