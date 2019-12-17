@@ -201,6 +201,21 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         )
         self.__then_user_get_400_with_error()
 
+    def test_return_400_when_user_want_to_accept_user_but_send_more_data_in_json(self):
+        self.__given_two_users_and_one_sent_invitation()
+        self.__when_user_accept_invitation__with_additional_json_data(
+            action_user_header=self.users_data[1]["headers"], username="TEST_USER"
+        )
+        self.__then_user_get_400_with_error()
+
+    def __when_user_accept_invitation__with_additional_json_data(
+        self, action_user_header, username
+    ):
+        json = {"username": username, "test": "test"}
+        self.response = self.send_accept_invitation(
+            headers=action_user_header, json=json
+        )
+
     def test_return_400_when_user_want_to_accept_without_json(self):
         self.__given_two_users_and_one_sent_invitation()
         self.__when_user_accept_invitation_without_json_data(

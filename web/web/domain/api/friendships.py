@@ -24,7 +24,7 @@ def send_invitation(json_data, current_user):
         abort(400)
 
 
-@friendship_blueprint.route("/invitations/pending", methods=["GET"])
+@friendship_blueprint.route("/invitations", methods=["GET"])
 @token_required
 def list_invitations_from_users(current_user):
     users = Friendship.get_list_of_pending_users(current_user)
