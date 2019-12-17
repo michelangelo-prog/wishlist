@@ -1,7 +1,7 @@
 # web/domain/decorators.py
 from functools import wraps
 
-from flask import jsonify, request
+from flask import abort, jsonify, request
 from jwt import ExpiredSignatureError, InvalidTokenError
 from marshmallow import ValidationError
 from sqlalchemy.orm.exc import NoResultFound
@@ -58,7 +58,7 @@ def request_schema(schema):
             try:
                 json_data = schema().load(json)
             except ValidationError:
-                return jsonify({"status": "fail", "message": "Invalid json."}), 400
+                abort(400)
             return f(json_data, *args, **kwargs)
 
         return wrapper

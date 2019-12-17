@@ -20,8 +20,8 @@ def send_invitation(json_data, current_user):
         user = User.get_user_by_username(json_data["username"])
         Friendship.add_invitation(action_user=current_user, user=user)
         return jsonify({"status": "success"}), 201
-    except (ValidationError, UserDoesNotExist) as e:
-        return jsonify({"status": "fail", "message": str(e)}), 400
+    except (ValidationError, UserDoesNotExist):
+        abort(400)
 
 
 @friendship_blueprint.route("/invitations/pending", methods=["GET"])
