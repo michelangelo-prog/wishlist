@@ -7,9 +7,9 @@ from web.tests.factories import UserFactory
 class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
     def test_user_can_send_invitation_to_another_user(self):
         self.__given_two_registered_users()
+        self.json = self.__prepare_dict_with_username(self.users_data[1]["username"])
         self.__when_user_send_invitation(
-            action_user_header=self.users_data[0]["headers"],
-            username=self.users_data[1]["username"],
+            action_user_headers=self.users_data[0]["headers"], json=self.json
         )
         self.__then_user_get_201_when_invitation_has_been_successfully_sent()
 
@@ -44,10 +44,12 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
     def __prepare_user_header(self, token):
         return {"Authorization": f"Bearer {token}", "Accept": "application/json"}
 
-    def __when_user_send_invitation(self, action_user_header, username):
-        json = {"username": username}
+    def __prepare_dict_with_username(self, username):
+        return {"username": username}
+
+    def __when_user_send_invitation(self, action_user_headers=None, json=None):
         self.response = self.send_invitation_to_user(
-            headers=action_user_header, json=json
+            headers=action_user_headers, json=json
         )
 
     def __then_user_get_201_when_invitation_has_been_successfully_sent(self):
@@ -57,7 +59,10 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
 
     def test_return_400_when_user_send_invitation_twice(self):
         self.__given_two_users_and_one_sent_invitation()
-        self.__when_user_send_invitation_to_user_who_alredy_has_invitation()
+        self.json = self.__prepare_dict_with_username(self.users_data[1]["username"])
+        self.__when_user_send_invitation(
+            action_user_headers=self.users_data[0]["headers"], json=self.json
+        )
         self.__then_user_get_400_with_error()
 
     def __given_two_users_and_one_sent_invitation(self):
@@ -67,17 +72,11 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         )
 
     def send_invitation(self, action_user_data, to_user_data):
-        json = {"username": to_user_data["username"]}
+        json = self.__prepare_dict_with_username(to_user_data["username"])
         response = self.send_invitation_to_user(
             headers=action_user_data["headers"], json=json
         )
         self.assertEqual(201, response.status_code)
-
-    def __when_user_send_invitation_to_user_who_alredy_has_invitation(self):
-        self.__when_user_send_invitation(
-            action_user_header=self.users_data[0]["headers"],
-            username=self.users_data[1]["username"],
-        )
 
     def __then_user_get_400_with_error(self):
         self.assertEqual(400, self.response.status_code)
@@ -86,50 +85,53 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
 
     def test_return_400_when_user_send_invitation_to_not_existing_user(self):
         self.__given_two_registered_users()
+        self.json = self.__prepare_dict_with_username("Test")
         self.__when_user_send_invitation(
-            action_user_header=self.users_data[0]["headers"], username="Test"
+            action_user_headers=self.users_data[0]["headers"], json=self.json
         )
         self.__then_user_get_400_with_error()
 
     def test_return_400_when_user_send_invitation_without_json(self):
         self.__given_two_registered_users()
-        self.__when_user_send_invitation_without_username(
-            action_user_header=self.users_data[0]["headers"]
+        self.__when_user_send_invitation(
+            action_user_headers=self.users_data[0]["headers"]
         )
         self.__then_user_get_400_with_error()
-
-    def __when_user_send_invitation_without_username(self, action_user_header):
-        self.response = self.send_invitation_to_user(headers=action_user_header)
 
     def test_return_400_when_send_invitation_with_additional_data_in_json(self):
         self.__given_two_registered_users()
-        self.__when_user_send_invitation_with_invalid_json(
-            action_user_header=self.users_data[0]["headers"],
-            json={"username": self.users_data[1]["username"], "test": "test"},
+        self.json = self.__prepare_dict_with_username(self.users_data[1]["username"])
+        self.json["test"] = "test"
+        self.__when_user_send_invitation(
+            action_user_headers=self.users_data[0]["headers"], json=self.json
         )
         self.__then_user_get_400_with_error()
-
-    def __when_user_send_invitation_with_invalid_json(self, action_user_header, json):
-        self.response = self.send_invitation_to_user(
-            headers=action_user_header, json=json
-        )
 
     def test_return_400_when_send_invitation_with_invalid_data_in_json(self):
         self.__given_two_registered_users()
-        self.__when_user_send_invitation_with_invalid_json(
-            action_user_header=self.users_data[0]["headers"], json={"test": "test"}
+        self.__when_user_send_invitation(
+            action_user_headers=self.users_data[0]["headers"], json={"test": "test"}
         )
         self.__then_user_get_400_with_error()
 
-    def test_return_400_when_user_send_invitation_to_user_who_has_sent_invitation_already(
-        self,
-    ):
-        self.__given_two_users_and_one_sent_invitation()
+    def test_return_400_when_user_send_invitation_to_friend(self):
+        self.__given_user_with_friend()
+        self.json = self.__prepare_dict_with_username(self.users_data[1]["username"])
         self.__when_user_send_invitation(
-            action_user_header=self.users_data[1]["headers"],
-            username=self.users_data[0]["username"],
+            action_user_headers=self.users_data[0]["headers"], json=self.json
         )
         self.__then_user_get_400_with_error()
+
+    def __given_user_with_friend(self):
+        self.users_data = self.create_users(number_of_users=2)
+
+        for user_data in self.users_data[1:]:
+            self.send_invitation(
+                action_user_data=user_data, to_user_data=self.users_data[0]
+            )
+            self.accept_invitation(
+                action_user_data=self.users_data[0], from_user_data=user_data
+            )
 
     def test_user_can_list_invitations_for_acceptance(self):
         self.__given_two_users_and_one_sent_invitation()
@@ -162,14 +164,13 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
 
     def test_user_accept_invitation_from_another_user(self):
         self.__given_two_users_and_one_sent_invitation()
+        self.json = self.__prepare_dict_with_username(self.users_data[0]["username"])
         self.__when_user_accept_invitation(
-            action_user_header=self.users_data[1]["headers"],
-            username=self.users_data[0]["username"],
+            action_user_header=self.users_data[1]["headers"], json=self.json
         )
         self.__then_user_get_200_and_json_with_success_status()
 
-    def __when_user_accept_invitation(self, action_user_header, username):
-        json = {"username": username}
+    def __when_user_accept_invitation(self, action_user_header=None, json=None):
         self.response = self.send_accept_invitation(
             headers=action_user_header, json=json
         )
@@ -181,50 +182,35 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
 
     def test_return_400_if_want_to_accept_not_existing_invitation(self):
         self.__given_two_registered_users()
+        self.json = self.__prepare_dict_with_username(self.users_data[0]["username"])
         self.__when_user_accept_invitation(
-            action_user_header=self.users_data[1]["headers"],
-            username=self.users_data[0]["username"],
+            action_user_header=self.users_data[1]["headers"], json=self.json
         )
         self.__then_user_get_400_with_error()
 
     def test_return_400_if_want_to_accept_not_existing_user(self):
         self.__given_two_users_and_one_sent_invitation()
+        self.json = self.__prepare_dict_with_username("TEST")
         self.__when_user_accept_invitation(
-            action_user_header=self.users_data[1]["headers"], username="TEST"
-        )
-        self.__then_user_get_400_with_error()
-
-    def test_return_400_when_user_want_to_accept_not_existing_user(self):
-        self.__given_two_users_and_one_sent_invitation()
-        self.__when_user_accept_invitation(
-            action_user_header=self.users_data[1]["headers"], username="TEST_USER"
+            action_user_header=self.users_data[1]["headers"], json=self.json
         )
         self.__then_user_get_400_with_error()
 
     def test_return_400_when_user_want_to_accept_user_but_send_more_data_in_json(self):
         self.__given_two_users_and_one_sent_invitation()
-        self.__when_user_accept_invitation__with_additional_json_data(
-            action_user_header=self.users_data[1]["headers"], username="TEST_USER"
+        self.json = self.__prepare_dict_with_username(self.users_data[0]["username"])
+        self.json["test"] = "TEST"
+        self.__when_user_accept_invitation(
+            action_user_header=self.users_data[1]["headers"], json=self.json
         )
         self.__then_user_get_400_with_error()
-
-    def __when_user_accept_invitation__with_additional_json_data(
-        self, action_user_header, username
-    ):
-        json = {"username": username, "test": "test"}
-        self.response = self.send_accept_invitation(
-            headers=action_user_header, json=json
-        )
 
     def test_return_400_when_user_want_to_accept_without_json(self):
         self.__given_two_users_and_one_sent_invitation()
-        self.__when_user_accept_invitation_without_json_data(
+        self.__when_user_accept_invitation(
             action_user_header=self.users_data[1]["headers"]
         )
         self.__then_user_get_400_with_error()
-
-    def __when_user_accept_invitation_without_json_data(self, action_user_header):
-        self.response = self.send_accept_invitation(headers=action_user_header)
 
     def test_user_have_four_friends(self):
         self.__given_user_with_four_friends()
@@ -245,7 +231,7 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
             )
 
     def accept_invitation(self, action_user_data, from_user_data):
-        json = {"username": from_user_data["username"]}
+        json = self.__prepare_dict_with_username(from_user_data["username"])
         response = self.send_accept_invitation(
             headers=action_user_data["headers"], json=json
         )
@@ -289,7 +275,7 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
     def test_user_can_decline_inviation(self):
         self.__given_two_users_and_one_sent_invitation()
         self.action_user_headers = self.users_data[1]["headers"]
-        self.json = {"username": self.users_data[0]["username"]}
+        self.json = self.__prepare_dict_with_username(self.users_data[0]["username"])
         self.__when_user_decline_invitation(
             action_user_headers=self.action_user_headers, json=self.json
         )
