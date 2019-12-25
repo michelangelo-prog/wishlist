@@ -259,6 +259,7 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         self.assertEqual(200, self.response.status_code)
         json = self.response.json
         self.assertEqual(1, len(json["results"]))
+        self.assertEqual(self.users_data[0]["username"], json["results"][0]["username"])
 
     def test_when_user_have_no_friends(self):
         self.__given_two_registered_users()
