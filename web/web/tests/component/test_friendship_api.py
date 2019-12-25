@@ -333,11 +333,39 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         pass
 
     @pytest.mark.skip(reason="TODO")
+    def test_return_400_when_user_send_decline_to_friend(self):
+        pass
+
+    @pytest.mark.skip(reason="TODO")
+    def test_return_400_when_send_decline_to_unknown_user(self):
+        pass
+
+    @pytest.mark.skip(reason="TODO")
+    def test_return_400_when_send_decline_with_unknown_username(self):
+        pass
+
+    @pytest.mark.skip(reason="TODO")
+    def test_return_400_when_send_decline_with_additional_json_data(self):
+        pass
+
+    @pytest.mark.skip(reason="TODO")
     def test_user_delete_friend_from_friends(self):
         pass
 
     @pytest.mark.skip(reason="TODO")
-    def test_deleted_user_not_in_list_of_friends(self):
+    def test_delete_user_and_user_not_in_list_of_friends(self):
+        pass
+
+    @pytest.mark.skip(reason="TODO")
+    def test_return_400_when_send_delete_to_user_who_is_not_friend(self):
+        pass
+
+    @pytest.mark.skip(reason="TODO")
+    def test_return_400_when_send_delete_to_unknown_user(self):
+        pass
+
+    @pytest.mark.skip(reason="TODO")
+    def test_return_400_when_user_send_json_with_additional_data(self):
         pass
 
 
