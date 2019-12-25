@@ -74,6 +74,10 @@ class FriendshipMixin:
         uri = "/api/v1/friendships/invitations"
         return self.client.delete(uri, **kwargs)
 
+    def get_list_of_users_to_whom_invitations_have_been_sent(self, **kwargs):
+        uri = "/api/v1/friendships/invitations/sent"
+        return self.client.get(uri, **kwargs)
+
     def get_list_of_friends(self, **kwargs):
         uri = "api/v1/friendships/all"
         return self.client.get(uri, **kwargs)

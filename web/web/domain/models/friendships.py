@@ -115,3 +115,16 @@ class Friendship(IdMixin, db.Model):
 
         db.session.delete(pending_invitation)
         db.session.commit()
+
+    @classmethod
+    def get_list_of_users_who_got_invitation(cls, user):
+        objs = cls.get_user_sent_invitations(user)
+        return cls.__get_users_from_friendships_objects(user, objs)
+
+    @classmethod
+    def get_user_sent_invitations(cls, user):
+        return cls.query.filter(
+            (cls.action_user == user)
+            & (cls.status == 1)
+            & ((cls.user_two == user) | (cls.user_one == user))
+        ).all()

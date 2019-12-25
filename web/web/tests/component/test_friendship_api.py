@@ -164,13 +164,34 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         expected_json = {"results": []}
         self.assertEqual(expected_json, self.response.json)
 
-    @pytest.mark.skip(reason="TODO")
     def test_check_invitations_which_user_sent(self):
-        pass
+        self.__given_two_users_and_one_sent_invitation()
+        self.__when_user_check_invitations_which_sent(
+            action_user_headers=self.users_data[0]["headers"]
+        )
+        self.__return_200_and_invitation_which_user_sent()
 
-    @pytest.mark.skip(reason="TODO")
+    def __when_user_check_invitations_which_sent(self, action_user_headers):
+        self.response = self.get_list_of_users_to_whom_invitations_have_been_sent(
+            headers=action_user_headers
+        )
+
+    def __return_200_and_invitation_which_user_sent(self):
+        self.assertEqual(200, self.response.status_code)
+        expected_json = {"results": [{"username": self.users_data[1]["username"]}]}
+        self.assertEqual(expected_json, self.response.json)
+
     def test_check_invitations_which_user_sent_when_no_invitations_have_been_sent(self):
-        pass
+        self.__given_two_registered_users()
+        self.__when_user_check_invitations_which_sent(
+            action_user_headers=self.users_data[0]["headers"]
+        )
+        self.__return_200_and_no_invitation_which_user_sent()
+
+    def __return_200_and_no_invitation_which_user_sent(self):
+        self.assertEqual(200, self.response.status_code)
+        expected_json = {"results": []}
+        self.assertEqual(expected_json, self.response.json)
 
     def test_user_accept_invitation_from_another_user(self):
         self.__given_two_users_and_one_sent_invitation()

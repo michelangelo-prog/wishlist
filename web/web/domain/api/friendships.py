@@ -55,6 +55,13 @@ def decline_invitation_from_user(json_data, current_user):
         abort(400)
 
 
+@friendship_blueprint.route("/invitations/sent", methods=["GET"])
+@token_required
+def get_all_users_who_got_invitation(current_user):
+    users = Friendship.get_list_of_users_who_got_invitation(current_user)
+    return (jsonify({"results": [{"username": user.username} for user in users]}), 200)
+
+
 @friendship_blueprint.route("/all", methods=["GET"])
 @token_required
 def get_all_friends(current_user):
