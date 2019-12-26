@@ -38,7 +38,7 @@ def accept_invitation_from_user(json_data, current_user):
     try:
         user = User.get_user_by_username(json_data["username"])
         Friendship.accept_invitation(action_user=current_user, user=user)
-        return jsonify({"status": "success"}), 200
+        return {}, 204
     except (UserDoesNotExist, FriendshipDoesNotExist):
         abort(400)
 
@@ -50,7 +50,7 @@ def decline_invitation_from_user(json_data, current_user):
     try:
         user = User.get_user_by_username(json_data["username"])
         Friendship.decline_invitation(action_user=current_user, user=user)
-        return jsonify({"status": "success"}), 200
+        return {}, 204
     except (UserDoesNotExist, FriendshipDoesNotExist):
         abort(400)
 

@@ -199,17 +199,15 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         self.__when_user_accept_invitation(
             action_user_header=self.users_data[1]["headers"], json=self.json
         )
-        self.__then_user_get_200_and_json_with_success_status()
+        self.__then_user_get_204()
 
     def __when_user_accept_invitation(self, action_user_header=None, json=None):
         self.response = self.send_accept_invitation(
             headers=action_user_header, json=json
         )
 
-    def __then_user_get_200_and_json_with_success_status(self):
-        self.assertEqual(200, self.response.status_code)
-        expected_json = {"status": "success"}
-        self.assertEqual(expected_json, self.response.json)
+    def __then_user_get_204(self):
+        self.assertEqual(204, self.response.status_code)
 
     def test_return_400_if_want_to_accept_not_existing_invitation(self):
         self.__given_two_registered_users()
@@ -266,7 +264,7 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         response = self.send_accept_invitation(
             headers=action_user_data["headers"], json=json
         )
-        self.assertEqual(200, response.status_code)
+        self.assertEqual(204, response.status_code)
 
     def __when_user_check_if_have_any_friends(self, action_user_header):
         self.response = self.get_list_of_friends(headers=action_user_header)
@@ -311,7 +309,7 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         self.__when_user_decline_invitation(
             action_user_headers=self.action_user_headers, json=self.json
         )
-        self.__then_user_get_200_and_json_with_success_status()
+        self.__then_user_get_204()
 
     def __when_user_decline_invitation(self, action_user_headers, json):
         self.response = self.send_decline_invitation(
@@ -339,35 +337,75 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         response = self.send_decline_invitation(
             headers=action_user_data["headers"], json=json
         )
-        self.assertEqual(200, response.status_code)
+        self.assertEqual(204, response.status_code)
 
-    @pytest.mark.skip(reason="TODO")
     def test_user_who_sent_invitation_can_decline_invitation(self):
-        pass
+        self.__given_two_users_and_one_sent_invitation()
+        self.action_user_headers = self.users_data[0]["headers"]
+        self.json = self.__prepare_dict_with_username(self.users_data[1]["username"])
+        self.__when_user_decline_invitation(
+            action_user_headers=self.action_user_headers, json=self.json
+        )
+        self.__then_user_get_204()
 
-    @pytest.mark.skip(reason="TODO")
     def test_user_who_declined_own_invitation_have_no_pending_invitations(self):
-        pass
+        self.__given_two_users_and_one_sent_invitation()
+        self.decline_invitation(
+            action_user_data=self.users_data[0], to_user_data=self.users_data[1]
+        )
+        self.__when_user_check_invitations_which_sent(
+            action_user_headers=self.users_data[0]["headers"]
+        )
+        self.__return_200_and_no_invitation_which_user_sent()
 
-    @pytest.mark.skip(reason="TODO")
-    def test_user_have_no_pending_invitation_when_action_user_decline_invitation(self):
-        pass
+    def test_user_have_one_pending_invitation_when_action_user_decline_invitation(self):
+        self.__given_user_who_has_sent_two_invitations()
+        self.decline_invitation(
+            action_user_data=self.users_data[0], to_user_data=self.users_data[1]
+        )
+        self.__when_user_check_invitations_which_sent(
+            action_user_headers=self.users_data[0]["headers"]
+        )
+        self.__then_return_200_and_one_invitation_which_user_sent()
 
-    @pytest.mark.skip(reason="TODO")
+    def __given_user_who_has_sent_two_invitations(self):
+        self.users_data = self.create_users(number_of_users=3)
+
+        for user in self.users_data[1:]:
+            self.send_invitation(action_user_data=self.users_data[0], to_user_data=user)
+
+    def __then_return_200_and_one_invitation_which_user_sent(self):
+        self.assertEqual(200, self.response.status_code)
+        expected_json = {"results": [{"username": self.users_data[2]["username"]}]}
+        self.assertEqual(expected_json, self.response.json)
+
     def test_return_400_when_user_send_decline_to_friend(self):
-        pass
+        self.__given_user_with_four_friends()
+        self.action_user_headers = self.users_data[0]["headers"]
+        self.json = self.__prepare_dict_with_username(self.users_data[1]["username"])
+        self.__when_user_decline_invitation(
+            action_user_headers=self.action_user_headers, json=self.json
+        )
+        self.__then_user_get_400_with_error()
 
-    @pytest.mark.skip(reason="TODO")
     def test_return_400_when_send_decline_to_unknown_user(self):
-        pass
+        self.__given_user_who_has_sent_two_invitations()
+        self.action_user_headers = self.users_data[0]["headers"]
+        self.json = self.__prepare_dict_with_username("TEST")
+        self.__when_user_decline_invitation(
+            action_user_headers=self.action_user_headers, json=self.json
+        )
+        self.__then_user_get_400_with_error()
 
-    @pytest.mark.skip(reason="TODO")
-    def test_return_400_when_send_decline_with_unknown_username(self):
-        pass
-
-    @pytest.mark.skip(reason="TODO")
     def test_return_400_when_send_decline_with_additional_json_data(self):
-        pass
+        self.__given_user_who_has_sent_two_invitations()
+        self.action_user_headers = self.users_data[0]["headers"]
+        self.json = self.__prepare_dict_with_username(self.users_data[1]["username"])
+        self.json["data"] = "data"
+        self.__when_user_decline_invitation(
+            action_user_headers=self.action_user_headers, json=self.json
+        )
+        self.__then_user_get_400_with_error()
 
     @pytest.mark.skip(reason="TODO")
     def test_user_delete_friend_from_friends(self):
