@@ -1,7 +1,5 @@
 import unittest
 
-import pytest
-
 from web.tests.component.mixins import BaseTestCase, FriendshipMixin, UserMixin
 from web.tests.factories import UserFactory
 
@@ -441,17 +439,33 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
 
         self.assertNotIn(deleted_user_data["username"], self.response.json["results"])
 
-    @pytest.mark.skip(reason="TODO")
     def test_return_400_when_send_delete_to_user_who_is_not_friend(self):
-        pass
+        self.__given_user_with_four_friends()
+        self.action_user_headers = self.users_data[1]["headers"]
+        self.json = self.__prepare_dict_with_username(self.users_data[2]["username"])
+        self.__when_user_delete_friend(
+            action_user_headers=self.action_user_headers, json=self.json
+        )
+        self.__then_user_get_400_with_error()
 
-    @pytest.mark.skip(reason="TODO")
     def test_return_400_when_send_delete_to_unknown_user(self):
-        pass
+        self.__given_user_with_four_friends()
+        self.action_user_headers = self.users_data[1]["headers"]
+        self.json = self.__prepare_dict_with_username("TEST")
+        self.__when_user_delete_friend(
+            action_user_headers=self.action_user_headers, json=self.json
+        )
+        self.__then_user_get_400_with_error()
 
-    @pytest.mark.skip(reason="TODO")
     def test_return_400_when_user_send_json_with_additional_data(self):
-        pass
+        self.__given_user_with_four_friends()
+        self.action_user_headers = self.users_data[0]["headers"]
+        self.json = self.__prepare_dict_with_username(self.users_data[2]["username"])
+        self.json["data"] = "TEST"
+        self.__when_user_delete_friend(
+            action_user_headers=self.action_user_headers, json=self.json
+        )
+        self.__then_user_get_400_with_error()
 
 
 if __name__ == "__main__":
