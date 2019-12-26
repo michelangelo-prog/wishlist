@@ -70,3 +70,15 @@ def get_all_friends(current_user):
         jsonify({"results": [{"username": user.username} for user in user_friends]}),
         200,
     )
+
+
+@friendship_blueprint.route("/delete", methods=["DELETE"])
+@token_required
+@request_schema(FriendshipRequestSchema)
+def delete_friend(json_data, current_user):
+    try:
+        user = User.get_user_by_username(json_data["username"])
+        Friendship.delete_friend(action_user=current_user, user=user)
+        return {}, 204
+    except (UserDoesNotExist, FriendshipDoesNotExist):
+        abort(400)

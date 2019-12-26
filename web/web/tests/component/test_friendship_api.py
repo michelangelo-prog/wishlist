@@ -407,13 +407,39 @@ class TestFriendshipBlueprint(UserMixin, FriendshipMixin, BaseTestCase):
         )
         self.__then_user_get_400_with_error()
 
-    @pytest.mark.skip(reason="TODO")
     def test_user_delete_friend_from_friends(self):
-        pass
+        self.__given_user_with_four_friends()
+        self.action_user_headers = self.users_data[0]["headers"]
+        self.json = self.__prepare_dict_with_username(self.users_data[1]["username"])
+        self.__when_user_delete_friend(
+            action_user_headers=self.action_user_headers, json=self.json
+        )
+        self.__then_user_get_204()
 
-    @pytest.mark.skip(reason="TODO")
+    def __when_user_delete_friend(self, action_user_headers=None, json=None):
+        self.response = self.send_delete_friend(headers=action_user_headers, json=json)
+
     def test_delete_user_and_user_not_in_list_of_friends(self):
-        pass
+        self.__given_user_with_four_friends()
+        self.delete_friend(
+            action_user_data=self.users_data[0], to_user_data=self.users_data[1]
+        )
+        self.__when_user_check_if_have_any_friends(
+            action_user_header=self.users_data[0]["headers"]
+        )
+        self.__then_deleted_user_not_in_list(deleted_user_data=self.users_data[1])
+
+    def delete_friend(self, action_user_data, to_user_data):
+        json = self.__prepare_dict_with_username(to_user_data["username"])
+        response = self.send_delete_friend(
+            headers=action_user_data["headers"], json=json
+        )
+        self.assertEqual(204, response.status_code)
+
+    def __then_deleted_user_not_in_list(self, deleted_user_data):
+        self.assertEqual(200, self.response.status_code)
+
+        self.assertNotIn(deleted_user_data["username"], self.response.json["results"])
 
     @pytest.mark.skip(reason="TODO")
     def test_return_400_when_send_delete_to_user_who_is_not_friend(self):

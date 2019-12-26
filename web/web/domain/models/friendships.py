@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 from web.domain import db
 from web.domain.models.behaviors import IdMixin
 
-STATUS = {1: "Pending", 2: "Accepted", 3: "Declined"}
+STATUS = {1: "Pending", 2: "Accepted"}
 
 
 class FriendshipDoesNotExist(Exception):
@@ -128,3 +128,12 @@ class Friendship(IdMixin, db.Model):
             & (cls.status == 1)
             & ((cls.user_two == user) | (cls.user_one == user))
         ).all()
+
+    @classmethod
+    def delete_friend(cls, action_user, user):
+        user_one, user_two = cls.set_up_users_order(action_user, user)
+        friendship = cls.get_obj_using_filter_or_raise_exception(
+            user_one=user_one, user_two=user_two, status=2
+        )
+        db.session.delete(friendship)
+        db.session.commit()
