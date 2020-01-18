@@ -1,9 +1,6 @@
 FROM python:3.6.9
 
-# install netcat
-RUN apt-get update \
-  && apt-get -y install netcat \
-  && apt-get clean
+RUN apt-get update
 
 # install vim
 RUN apt-get -y install vim \
