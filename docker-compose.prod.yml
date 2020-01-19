@@ -25,9 +25,9 @@ services:
 
   nginx:
     build:
-      context:
-        ./nginx
+      context: ./nginx
+      dockerfile: Dockerfile
     ports:
-      - 1337:80
+      - 1337:8080
     depends_on:
       - web
