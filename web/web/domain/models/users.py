@@ -36,31 +36,23 @@ class User(IdMixin, CreateAtMixin, UpdateAtMixin, db.Model):
     @validates("username")
     def validate_username(self, key, value):
         if not key or not value:
-            raise ValidationError(
-                {"status": "fail", "message": "Username not provided."}
-            )
+            raise ValidationError("Username not provided.")
         if User.user_with_username_exists(value):
-            raise ValidationError(
-                {"status": "fail", "message": "User with given username exists."}
-            )
+            raise ValidationError("User with given username exists.")
         return value
 
     @validates("email")
     def validate_email(self, key, value):
         if not key or not value:
-            raise ValidationError({"status": "fail", "message": "Email not provided."})
+            raise ValidationError("Email not provided.")
         if User.user_with_email_exists(value):
-            raise ValidationError(
-                {"status": "fail", "message": "User with given username exists."}
-            )
+            raise ValidationError("User with given email exists.")
         return value
 
     @validates("password")
     def validate_password(self, key, value):
         if not key or not value:
-            raise ValidationError(
-                {"status": "fail", "message": "Password not provided."}
-            )
+            raise ValidationError("Password not provided.")
         return generate_password_hash(value, method="sha256")
 
     def to_dict(self):
@@ -76,13 +68,17 @@ class User(IdMixin, CreateAtMixin, UpdateAtMixin, db.Model):
 
     @classmethod
     def authenticate(cls, **kwargs):
+        username = kwargs.get("username")
         email = kwargs.get("email")
         password = kwargs.get("password")
 
-        if not email or not password:
+        if username and password:
+            user = cls.get_user_by_username(username)
+        elif email and password:
+            user = cls.get_user_by_email(email)
+        else:
             return None
 
-        user = cls.get_user_by_email(email)
         if not user or not check_password_hash(user.password, password):
             return None
 

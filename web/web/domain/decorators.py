@@ -11,13 +11,9 @@ from web.domain.models.blacklisttokens import BlacklistToken
 from web.domain.models.users import User, UserDoesNotExist
 
 invalid_msg = {
-    "message": "Invalid token. Registeration and / or authentication required",
-    "authenticated": False,
+    "message": "Invalid token. Registeration and / or authentication required"
 }
-expired_msg = {
-    "message": "Expired token. Reauthentication required.",
-    "authenticated": False,
-}
+expired_msg = {"message": "Expired token. Reauthentication required."}
 
 
 def __check_if_token_is_blacklisted(token):
