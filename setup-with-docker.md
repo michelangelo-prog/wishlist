@@ -18,35 +18,22 @@ By default the app is set to use the production configuration. If you would like
 APP_SETTINGS="web.domain.config.DevelopmentConfig"
 ```
 
-
 Create the database:
 -
 ```sh
-$ docker-compose run web python manage.py create-db
-$ docker-compose run web python manage.py db init
-$ docker-compose run web python manage.py db migrate
-$ docker-compose run web python manage.py create-admin
-$ docker-compose run web python manage.py create-data
+$ docker-compose run web python manage.py db upgrade
 ```
 
 Access the application at the address [http://localhost:5002/](http://localhost:5002/)
 
-### Testing
-
-Test without coverage:
+### Run tests
 
 ```sh
-$ docker-compose run web python manage.py test
+docker-compose run web python manage.py test-pytest
 ```
 
-Test with coverage:
+### Run tests with black, isort and flakes
 
 ```sh
-$ docker-compose run web python manage.py cov
-```
-
-Lint:
-
-```sh
-$ docker-compose run web flake8 web
+docker-compose run web python manage.py test-pytest-with-plugins
 ```

@@ -2,10 +2,13 @@ version: '3.5'
 
 services:
   web:
+    container_name: web
     build:
       context: ./web
       dockerfile: Dockerfile
     command: python manage.py run -h 0.0.0.0
+    volumes:
+      - ./web:/usr/src/app
     ports:
       - 5002:5000
     env_file:
