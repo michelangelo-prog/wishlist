@@ -4,6 +4,7 @@
 import os
 
 from flask import Flask, jsonify, make_response
+from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
@@ -24,6 +25,9 @@ def create_app(script_info=None):
 
     # instantiate the app
     app = Flask(__name__)
+
+    # add CORS
+    CORS(app)
 
     # set config
     app_settings = os.getenv("APP_SETTINGS", "Production")
