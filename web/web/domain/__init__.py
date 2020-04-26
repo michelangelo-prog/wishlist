@@ -27,7 +27,7 @@ def create_app(script_info=None):
     app = Flask(__name__)
 
     # add CORS
-    CORS(app)
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
 
     # set config
     app_settings = os.getenv("APP_SETTINGS", "Production")

@@ -99,7 +99,19 @@ class TestUserBlueprint(UserMixin, UserBaseTestCase):
         response = self.send_login_user(json=self.user_data)
         self.__check_if_201_and_correct_token(response)
 
-    def test_return_400_when_unregistered_user_try_login(self):
+    def test_return_401_when_unregistered_user_try_login_with_email(self):
+        data = UserFactory.build()
+        del data["username"]
+        response = self.send_login_user(json=data)
+        self.assertEqual(401, response.status_code)
+
+    def test_return_401_when_unregistered_user_try_login_with_username(self):
+        data = UserFactory.build()
+        del data["email"]
+        response = self.send_login_user(json=data)
+        self.assertEqual(401, response.status_code)
+
+    def test_return_400_when_unregistered_user_try_login_with_username_and_email(self):
         data = UserFactory.build()
         response = self.send_login_user(json=data)
         self.assertEqual(400, response.status_code)
